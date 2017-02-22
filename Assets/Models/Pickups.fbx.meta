@@ -1,0 +1,130 @@
+fileFormatVersion: 2
+guid: 639d3cc0d6caa8a4a99e1271436f351a
+timeCreated: 1485379448
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: Bottom_Half
+    100002: Bottom_Half_1
+    100004: Closed
+    100006: Cube___Bend___Bend_Cloner
+    100008: Cube___Bend___Bend_Cloner_2
+    100010: Cube___Bend___Bend_Cloner_3
+    100012: Cube___Bend___Bend_Cloner_4
+    100014: Inv__Cloak
+    100016: Open
+    100018: //RootNode
+    100020: Plane
+    100022: Plane_1
+    100024: Top_Half
+    100026: Top_Half_1
+    100028: Top_Half_1_Bottom_Half_1
+    100030: Top_Half_1_Bottom_Half_1_2
+    100032: Top_Half_Bottom_Half
+    400000: Bottom_Half
+    400002: Bottom_Half_1
+    400004: Closed
+    400006: Cube___Bend___Bend_Cloner
+    400008: Cube___Bend___Bend_Cloner_2
+    400010: Cube___Bend___Bend_Cloner_3
+    400012: Cube___Bend___Bend_Cloner_4
+    400014: Inv__Cloak
+    400016: Open
+    400018: //RootNode
+    400020: Plane
+    400022: Plane_1
+    400024: Top_Half
+    400026: Top_Half_1
+    400028: Top_Half_1_Bottom_Half_1
+    400030: Top_Half_1_Bottom_Half_1_2
+    400032: Top_Half_Bottom_Half
+    2300000: Cube___Bend___Bend_Cloner
+    2300002: Cube___Bend___Bend_Cloner_2
+    2300004: Cube___Bend___Bend_Cloner_3
+    2300006: Cube___Bend___Bend_Cloner_4
+    2300008: Top_Half_1_Bottom_Half_1
+    2300010: Top_Half_1_Bottom_Half_1_2
+    2300012: Top_Half_Bottom_Half
+    3300000: Cube___Bend___Bend_Cloner
+    3300002: Cube___Bend___Bend_Cloner_2
+    3300004: Cube___Bend___Bend_Cloner_3
+    3300006: Cube___Bend___Bend_Cloner_4
+    3300008: Top_Half_1_Bottom_Half_1
+    3300010: Top_Half_1_Bottom_Half_1_2
+    3300012: Top_Half_Bottom_Half
+    4300000: Top_Half_Bottom_Half
+    4300002: Top_Half_1_Bottom_Half_1
+    4300004: Cube___Bend___Bend_Cloner
+    4300006: Cube___Bend___Bend_Cloner_2
+    4300008: Top_Half_1_Bottom_Half_1_2
+    4300010: Cube___Bend___Bend_Cloner_3
+    4300012: Cube___Bend___Bend_Cloner_4
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

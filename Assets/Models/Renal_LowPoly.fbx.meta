@@ -1,0 +1,215 @@
+fileFormatVersion: 2
+guid: c9dd1ff072caf1d4db0c0a2cce4c24cc
+timeCreated: 1487191047
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: aorta
+    100002: aorta_2
+    100004: aorta_3
+    100006: bladder
+    100008: bladder_1
+    100010: infVenaCava
+    100012: infVenaCava_2
+    100014: infVenaCava_3
+    100016: Inv__Cloak
+    100018: lAdrenalGland
+    100020: lAdrenalGland_2
+    100022: lAdrenalGland_3
+    100024: lKidney
+    100026: lKidney_2
+    100028: lRenalCapsule
+    100030: lRenalCapsule_1
+    100032: lRenalCapsule_1_2
+    100034: lRenalCapsule_1_3
+    100036: lUreter
+    100038: lUreter_1
+    100040: lUreter_1_2
+    100042: rAdrenalGland
+    100044: rAdrenalGland_2
+    100046: rAdrenalGland_3
+    100048: //RootNode
+    100050: rKidney
+    100052: rKidney_2
+    100054: rRenalCapsule
+    100056: rRenalCapsule_1
+    100058: rRenalCapsule_1_2
+    100060: rRenalCapsule_1_3
+    100062: rUreter
+    100064: rUreter_1
+    100066: rUreter_1_2
+    400000: aorta
+    400002: aorta_2
+    400004: aorta_3
+    400006: bladder
+    400008: bladder_1
+    400010: infVenaCava
+    400012: infVenaCava_2
+    400014: infVenaCava_3
+    400016: Inv__Cloak
+    400018: lAdrenalGland
+    400020: lAdrenalGland_2
+    400022: lAdrenalGland_3
+    400024: lKidney
+    400026: lKidney_2
+    400028: lRenalCapsule
+    400030: lRenalCapsule_1
+    400032: lRenalCapsule_1_2
+    400034: lRenalCapsule_1_3
+    400036: lUreter
+    400038: lUreter_1
+    400040: lUreter_1_2
+    400042: rAdrenalGland
+    400044: rAdrenalGland_2
+    400046: rAdrenalGland_3
+    400048: //RootNode
+    400050: rKidney
+    400052: rKidney_2
+    400054: rRenalCapsule
+    400056: rRenalCapsule_1
+    400058: rRenalCapsule_1_2
+    400060: rRenalCapsule_1_3
+    400062: rUreter
+    400064: rUreter_1
+    400066: rUreter_1_2
+    2300000: aorta
+    2300002: aorta_3
+    2300004: bladder
+    2300006: bladder_1
+    2300008: infVenaCava
+    2300010: infVenaCava_3
+    2300012: lAdrenalGland
+    2300014: lAdrenalGland_3
+    2300016: lKidney
+    2300018: lKidney_2
+    2300020: lRenalCapsule
+    2300022: lRenalCapsule_1_2
+    2300024: lRenalCapsule_1_3
+    2300026: lUreter
+    2300028: lUreter_1_2
+    2300030: rAdrenalGland
+    2300032: rAdrenalGland_3
+    2300034: rKidney
+    2300036: rKidney_2
+    2300038: rRenalCapsule
+    2300040: rRenalCapsule_1_2
+    2300042: rRenalCapsule_1_3
+    2300044: rUreter
+    2300046: rUreter_1_2
+    3300000: aorta
+    3300002: aorta_3
+    3300004: bladder
+    3300006: bladder_1
+    3300008: infVenaCava
+    3300010: infVenaCava_3
+    3300012: lAdrenalGland
+    3300014: lAdrenalGland_3
+    3300016: lKidney
+    3300018: lKidney_2
+    3300020: lRenalCapsule
+    3300022: lRenalCapsule_1_2
+    3300024: lRenalCapsule_1_3
+    3300026: lUreter
+    3300028: lUreter_1_2
+    3300030: rAdrenalGland
+    3300032: rAdrenalGland_3
+    3300034: rKidney
+    3300036: rKidney_2
+    3300038: rRenalCapsule
+    3300040: rRenalCapsule_1_2
+    3300042: rRenalCapsule_1_3
+    3300044: rUreter
+    3300046: rUreter_1_2
+    4300000: infVenaCava
+    4300002: lUreter
+    4300004: rUreter
+    4300006: aorta
+    4300008: lAdrenalGland
+    4300010: lRenalCapsule
+    4300012: lKidney
+    4300014: rAdrenalGland
+    4300016: rRenalCapsule
+    4300018: rKidney
+    4300020: bladder
+    4300022: lRenalCapsule_1_2
+    4300024: rRenalCapsule_1_2
+    4300026: infVenaCava_3
+    4300028: lUreter_1_2
+    4300030: rUreter_1_2
+    4300032: aorta_3
+    4300034: lAdrenalGland_3
+    4300036: lRenalCapsule_1_3
+    4300038: lKidney_2
+    4300040: rAdrenalGland_3
+    4300042: rRenalCapsule_1_3
+    4300044: rKidney_2
+    4300046: bladder_1
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
