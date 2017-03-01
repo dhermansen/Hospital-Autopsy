@@ -52,14 +52,10 @@ public class Overlord : MonoBehaviour
 
     public void ToggleChange(Toggle t)
     {
-        Debug.Log(t.name);
         if (t.isOn)
             this.actives.Add(t.name);
         else
             this.actives.Remove(t.name);
-
-        foreach (var n in this.actives)
-            Debug.LogWarning(n);
 
         if (t.name == "Mode_Btn")
             mode_submenu.SetActive(t.isOn);
