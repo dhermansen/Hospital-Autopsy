@@ -17,14 +17,11 @@ public class BtnManager : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     // Use this for initialization
     void Start()
     {
-        Debug.Log("here1");
         txt = this.gameObject.GetComponentInChildren<Text>();
         bkg = this.gameObject.GetComponentInChildren<Image>();
         bkg.color = this.purple;
         bkg_on = Resources.Load<Sprite>("__blank");
         bkg_off = Resources.Load<Sprite>("SquareFrame");
-        if (!bkg_on || !bkg_off)
-            Debug.Log("Failed to load a sprite");
         bkg.overrideSprite = bkg_off;
 
         toggle = this.gameObject.GetComponent<Toggle>();
@@ -44,7 +41,6 @@ public class BtnManager : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     public void OnPointerEnter(PointerEventData pd)
     {
-        Debug.Log("there");
         txt.color = Color.white;
         bkg.overrideSprite = bkg_on;
     }
@@ -55,7 +51,6 @@ public class BtnManager : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     }
     private void PointerExit()
     {
-        Debug.Log("here");
         if (toggle.isOn)
         {
             txt.color = Color.white;
