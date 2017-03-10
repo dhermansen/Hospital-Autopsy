@@ -4,21 +4,34 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class OverController : MonoBehaviour {
-    private GameObject current;
+    private GameObject current_orig;
+    private GameObject current_copy;
     private GameObject ppanel;
     private GameObject fimgpanel;
     private GameObject mimgpanel;
     bool female_pressed;
+
+    private GameObject dup(GameObject orig)
+    {
+        //orig.SetActive(true);
+        var copy = GameObject.Instantiate(orig);
+        copy.transform.SetParent(orig.transform.parent);
+        copy.name = orig.name;
+        copy.SetActive(true);
+        orig.SetActive(false);
+        return copy;
+    }
     // Use this for initialization
     void Start () {
-        current = GameObject.Find("Renal");//.GetComponent<RenalController>();
-        current.SetActive(false);
+        Debug.Log("OverController");
+        current_orig = GameObject.Find("Renal");
+        current_copy = dup(current_orig);
+        current_copy.SetActive(false);
+
         ppanel = GameObject.Find("PracticePanel");
         ppanel.SetActive(false);
         fimgpanel = GameObject.Find("FemaleImagePanel");
-        //fimgpanel.SetActive(false);
         mimgpanel = GameObject.Find("MaleImagePanel");
-        //mimgpanel.SetActive(false);
     }
 
     // Update is called once per frame
@@ -27,14 +40,12 @@ public class OverController : MonoBehaviour {
 	}
     void GeneratePressed(Button btn)
     {
-        Debug.Log("It's pressed!");
         var gbt = btn.gameObject.GetComponentInChildren<Text>();
-        Debug.Log("Text " + gbt.text);
         if (gbt.text.Contains("G"))
         {
             //Move current system back to original location.
             // (May need to reset hinges, etc.)
-            current.SetActive(true);
+            current_copy.SetActive(true);
             ppanel.SetActive(true);
             female_pressed = fimgpanel.activeSelf;
             fimgpanel.SetActive(false);
@@ -44,12 +55,9 @@ public class OverController : MonoBehaviour {
         }
         else
         {
-            gbt.text = "  GENERATE";
             //Activate current system
-            //current.reset();
-            ppanel.SetActive(false);
-            fimgpanel.SetActive(female_pressed);
-            mimgpanel.SetActive(!female_pressed);
+            GameObject.Destroy(current_copy);
+            current_copy = dup(current_orig);
         }
     }
 }

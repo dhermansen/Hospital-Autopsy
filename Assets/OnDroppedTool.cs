@@ -20,15 +20,11 @@ public class OnDroppedTool : MonoBehaviour {
     private List<ToolItems> tools;
 	// Use this for initialization
 	void Start () {
+        Debug.Log("OnDroppedTool");
         var inst = GameObject.Find("Instruments");
         tools = inst.GetComponentsInChildren<Transform>().ToList<Transform>()
             .Where(tx => tx.parent == inst.transform)
             .Select(t => new ToolItems(t.gameObject, t.position, t.rotation)).ToList<ToolItems>();
-        foreach (var item in tools)
-        {
-            Debug.Log("Item " + item.obj.name);
-            Debug.Log(item.pos.ToString());
-        }
       }
 
         // Update is called once per frame

@@ -39,6 +39,7 @@ public class Overlord : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        Debug.Log("Overlord");
         instruction_info = inactivate("InstructionInfo");
         practice_info = inactivate("PracticeInfo");
         testing_info = inactivate("TestingInfo");
