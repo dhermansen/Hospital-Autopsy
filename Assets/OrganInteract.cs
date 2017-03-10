@@ -19,9 +19,10 @@ public class OrganInteract : MonoBehaviour {
         {
             var io = t.AddComponent<VRTK_InteractableObject>();
             io.isGrabbable = true;
-            io.InteractableObjectGrabbed += new InteractableObjectEventHandler(onGrab);
+            //io.InteractableObjectGrabbed += new InteractableObjectEventHandler(onGrab);
+            //io.InteractableObjectUngrabbed+= new InteractableObjectEventHandler(onUngrab);
+
             io.InteractableObjectUsed += new InteractableObjectEventHandler(onUse);
-            io.InteractableObjectUngrabbed+= new InteractableObjectEventHandler(onUngrab);
             io.InteractableObjectUnused += new InteractableObjectEventHandler(onUnuse);
             io.isUsable = true;
             var fj = t.AddComponent<VRTK_FixedJointGrabAttach>();
@@ -40,16 +41,16 @@ public class OrganInteract : MonoBehaviour {
     {
         var used = sender as VRTK_InteractableObject;
     }
-    void onGrab(object sender, InteractableObjectEventArgs args)
-    {
-        //Debug.Log(args.interactingObject.name);
-        var grabbed = sender as VRTK_InteractableObject;
-        //Debug.Log("grab " + grabbed.name);
-    }
-    void onUngrab(object sender, InteractableObjectEventArgs args)
-    {
-        var grabbed = sender as VRTK_InteractableObject;
-    }
+    //void onGrab(object sender, InteractableObjectEventArgs args)
+    //{
+    //    //Debug.Log(args.interactingObject.name);
+    //    var grabbed = sender as VRTK_InteractableObject;
+    //    //Debug.Log("grab " + grabbed.name);
+    //}
+    //void onUngrab(object sender, InteractableObjectEventArgs args)
+    //{
+    //    var grabbed = sender as VRTK_InteractableObject;
+    //}
 
     // Update is called once per frame
     void Update () {
