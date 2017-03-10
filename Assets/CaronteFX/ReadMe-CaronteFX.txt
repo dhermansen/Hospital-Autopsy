@@ -1,1 +1,0 @@
-To start using the editor extension go to Window -> CaronteFX Editor
