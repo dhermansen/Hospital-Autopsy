@@ -23,10 +23,9 @@ public class OverController : MonoBehaviour {
     }
     // Use this for initialization
     void Start () {
-        Debug.Log("OverController");
         current_orig = GameObject.Find("Renal");
-        current_copy = dup(current_orig);
-        current_copy.SetActive(false);
+        //current_copy = dup(current_orig);
+        //current_copy.SetActive(false);
 
         ppanel = GameObject.Find("PracticePanel");
         ppanel.SetActive(false);

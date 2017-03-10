@@ -20,7 +20,6 @@ public class OnDroppedTool : MonoBehaviour {
     private List<ToolItems> tools;
 	// Use this for initialization
 	void Start () {
-        Debug.Log("OnDroppedTool");
         var inst = GameObject.Find("Instruments");
         tools = inst.GetComponentsInChildren<Transform>().ToList<Transform>()
             .Where(tx => tx.parent == inst.transform)
@@ -34,13 +33,12 @@ public class OnDroppedTool : MonoBehaviour {
 
     private void OnTriggerEnter(Collider other)
     {
+        if (!other.transform.parent)
+            return;
         var dropped_tools = tools.Where(tool => tool.obj == other.transform.parent.gameObject);
         if (dropped_tools.Count() > 0)
         {
             var dropped = dropped_tools.First();
-            Debug.Log("Trigger entered " + dropped.obj.name);
-            Debug.Log(dropped.pos.ToString());
-            Debug.Log(dropped.obj.transform.position.ToString());
             //dropped.obj.
             dropped.obj.transform.position = dropped.pos;
             dropped.obj.transform.rotation = dropped.rot;
@@ -48,9 +46,5 @@ public class OnDroppedTool : MonoBehaviour {
             rb.velocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
         }
-        //else
-        //{
-        //    Debug.Log(other.transform.parent.name);
-        //}
     }
 }

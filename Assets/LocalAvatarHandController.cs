@@ -28,6 +28,9 @@ public class LocalAvatarHandController : MonoBehaviour {
     }
     private void onGrab(object sender, ObjectInteractEventArgs e)
     {
+        if (!target_to_hand.ContainsKey(e.target.name))
+            return;
+        Debug.Log(e.target.name);
         if (e.controllerIndex == 0)
             ovr.LeftHandCustomPose = hands["HandLeft" + target_to_hand[e.target.name]];
         else
