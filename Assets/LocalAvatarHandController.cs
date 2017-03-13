@@ -10,6 +10,7 @@ public class LocalAvatarHandController : MonoBehaviour {
     VRTK_InteractGrab left_grab, right_grab;
     VRTK_InteractUse left_use, right_use;
     private GameObject pickups;
+    private GameObject scissors;
     private FixedJoint fixed_joint;
     // Use this for initialization
     void Start () {
@@ -35,6 +36,7 @@ public class LocalAvatarHandController : MonoBehaviour {
         left_use.ControllerUnuseInteractableObject += new ObjectInteractEventHandler(onUnuse);
 
         pickups = GameObject.Find("Pickups");
+        scissors = GameObject.Find("Scissors");
     }
     private void onGrab(object sender, ObjectInteractEventArgs e)
     {
@@ -45,6 +47,11 @@ public class LocalAvatarHandController : MonoBehaviour {
             ovr.LeftHandCustomPose = hands["HandLeft" + target_to_hand[e.target.name]];
         else
             ovr.RightHandCustomPose = hands["HandRight" + target_to_hand[e.target.name]];
+
+        if (e.target == scissors)
+        {
+            activateAllBut(scissors, "Closed");
+        }
     }
     private void onUngrab(object sender, ObjectInteractEventArgs e)
     {
@@ -53,15 +60,19 @@ public class LocalAvatarHandController : MonoBehaviour {
         else if (e.controllerIndex == 1)
             ovr.RightHandCustomPose = null;
     }
+    private void activateAllBut(GameObject g, string name)
+    {
+        for (int i = 0; i < g.transform.childCount; ++i)
+        {
+            var ch = g.transform.GetChild(i);
+            ch.gameObject.SetActive(ch.name != name);
+        }
+    }
     private void onUse(object sender, ObjectInteractEventArgs e)
     {
         if (e.target == pickups)
         {
-            for (int i = 0; i < pickups.transform.childCount; ++i)
-            {
-                var ch = pickups.transform.GetChild(i);
-                ch.gameObject.SetActive(ch.name != "Open");
-            }
+            activateAllBut(pickups, "Open");
             var cp = pickups.GetComponent<PickupsTrigger>().currentPickup();
             if (cp)
             {
@@ -70,22 +81,36 @@ public class LocalAvatarHandController : MonoBehaviour {
                 fixed_joint.connectedBody = cp.GetComponent<Rigidbody>();
             }
         }
+        if (e.target == scissors)
+        {
+            if (e.controllerIndex == 0)
+                ovr.LeftHandCustomPose = hands["HandLeft_ScissorsClosed"];
+            else
+                ovr.RightHandCustomPose = hands["HandRight_ScissorsClosed"];
+
+            activateAllBut(scissors, "Open");
+        }
     }
     private void onUnuse(object sender, ObjectInteractEventArgs e)
     {
         if (e.target == pickups)
         {
-            for (int i = 0; i < pickups.transform.childCount; ++i)
-            {
-                var ch = pickups.transform.GetChild(i);
-                ch.gameObject.SetActive(ch.name != "Closed");
-            }
+            activateAllBut(pickups, "Closed");
             if (fixed_joint)
             {
                 //Debug.Log("Going to drop " + fixed_joint.name);
                 fixed_joint.connectedBody = null;
                 Destroy(fixed_joint);
             }
+        }
+        if (e.target == scissors)
+        {
+            if (e.controllerIndex == 0)
+                ovr.LeftHandCustomPose = hands["HandLeft_ScissorsOpen"];
+            else
+                ovr.RightHandCustomPose = hands["HandRight_ScissorsOpen"];
+
+            activateAllBut(scissors, "Closed");
         }
     }
     // Update is called once per frame

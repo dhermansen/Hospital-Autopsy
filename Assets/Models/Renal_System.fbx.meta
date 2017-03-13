@@ -1,0 +1,185 @@
+fileFormatVersion: 2
+guid: c18b99fcf0d784843835d7e9704a8f60
+timeCreated: 1489250305
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: aorta
+    100002: bladder
+    100004: bladder_MeshPart0
+    100006: bladder_MeshPart1
+    100008: bladder_MeshPart2
+    100010: bladder_MeshPart3
+    100012: bladder_MeshPart4
+    100014: infVenaCava
+    100016: lKidney
+    100018: lRenalCapsule
+    100020: lRenalCapsule_MeshPart0
+    100022: lRenalCapsule_MeshPart1
+    100024: lRenalCapsule_MeshPart2
+    100026: lUreter
+    100028: //RootNode
+    100030: rKidney
+    100032: rRenalCapsule
+    100034: rRenalCapsule_MeshPart0
+    100036: rRenalCapsule_MeshPart1
+    100038: rRenalCapsule_MeshPart2
+    100040: rUreter
+    400000: aorta
+    400002: bladder
+    400004: bladder_MeshPart0
+    400006: bladder_MeshPart1
+    400008: bladder_MeshPart2
+    400010: bladder_MeshPart3
+    400012: bladder_MeshPart4
+    400014: infVenaCava
+    400016: lKidney
+    400018: lRenalCapsule
+    400020: lRenalCapsule_MeshPart0
+    400022: lRenalCapsule_MeshPart1
+    400024: lRenalCapsule_MeshPart2
+    400026: lUreter
+    400028: //RootNode
+    400030: rKidney
+    400032: rRenalCapsule
+    400034: rRenalCapsule_MeshPart0
+    400036: rRenalCapsule_MeshPart1
+    400038: rRenalCapsule_MeshPart2
+    400040: rUreter
+    2300000: aorta
+    2300002: bladder_MeshPart0
+    2300004: bladder_MeshPart1
+    2300006: bladder_MeshPart2
+    2300008: bladder_MeshPart3
+    2300010: bladder_MeshPart4
+    2300012: infVenaCava
+    2300014: lKidney
+    2300016: lRenalCapsule_MeshPart0
+    2300018: lRenalCapsule_MeshPart1
+    2300020: lRenalCapsule_MeshPart2
+    2300022: lUreter
+    2300024: rKidney
+    2300026: rRenalCapsule_MeshPart0
+    2300028: rRenalCapsule_MeshPart1
+    2300030: rRenalCapsule_MeshPart2
+    2300032: rUreter
+    3300000: aorta
+    3300002: bladder_MeshPart0
+    3300004: bladder_MeshPart1
+    3300006: bladder_MeshPart2
+    3300008: bladder_MeshPart3
+    3300010: bladder_MeshPart4
+    3300012: infVenaCava
+    3300014: lKidney
+    3300016: lRenalCapsule_MeshPart0
+    3300018: lRenalCapsule_MeshPart1
+    3300020: lRenalCapsule_MeshPart2
+    3300022: lUreter
+    3300024: rKidney
+    3300026: rRenalCapsule_MeshPart0
+    3300028: rRenalCapsule_MeshPart1
+    3300030: rRenalCapsule_MeshPart2
+    3300032: rUreter
+    4300000: aorta
+    4300002: infVenaCava
+    4300004: lRenalCapsule_MeshPart0
+    4300006: lRenalCapsule_MeshPart1
+    4300008: lRenalCapsule_MeshPart2
+    4300010: lKidney
+    4300012: lUreter
+    4300014: rUreter
+    4300016: rRenalCapsule_MeshPart0
+    4300018: rRenalCapsule_MeshPart1
+    4300020: rRenalCapsule_MeshPart2
+    4300022: rKidney
+    4300024: bladder_MeshPart0
+    4300026: bladder_MeshPart1
+    4300028: bladder_MeshPart2
+    4300030: bladder_MeshPart3
+    4300032: bladder_MeshPart4
+    6400000: aorta
+    6400002: bladder_MeshPart0
+    6400004: bladder_MeshPart1
+    6400006: bladder_MeshPart2
+    6400008: bladder_MeshPart3
+    6400010: bladder_MeshPart4
+    6400012: infVenaCava
+    6400014: lKidney
+    6400016: lRenalCapsule_MeshPart0
+    6400018: lRenalCapsule_MeshPart1
+    6400020: lRenalCapsule_MeshPart2
+    6400022: lUreter
+    6400024: rKidney
+    6400026: rRenalCapsule_MeshPart0
+    6400028: rRenalCapsule_MeshPart1
+    6400030: rRenalCapsule_MeshPart2
+    6400032: rUreter
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
