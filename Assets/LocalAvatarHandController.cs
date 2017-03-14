@@ -11,7 +11,6 @@ public class LocalAvatarHandController : MonoBehaviour {
     VRTK_InteractUse left_use, right_use;
     private GameObject pickups;
     private GameObject scissors;
-    private FixedJoint fixed_joint;
     // Use this for initialization
     void Start () {
         target_to_hand["Long Knife"] = "_Knife";
@@ -49,9 +48,9 @@ public class LocalAvatarHandController : MonoBehaviour {
             ovr.RightHandCustomPose = hands["HandRight" + target_to_hand[e.target.name]];
 
         if (e.target == scissors)
-        {
             activateAllBut(scissors, "Closed");
-        }
+        else if (e.target == pickups)
+            pickups.GetComponent<PickupsTrigger>().onGrab();
     }
     private void onUngrab(object sender, ObjectInteractEventArgs e)
     {
@@ -59,6 +58,9 @@ public class LocalAvatarHandController : MonoBehaviour {
             ovr.LeftHandCustomPose = null;
         else if (e.controllerIndex == 1)
             ovr.RightHandCustomPose = null;
+
+        if (e.target == pickups)
+            pickups.GetComponent<PickupsTrigger>().onUngrab();
     }
     private void activateAllBut(GameObject g, string name)
     {
@@ -73,13 +75,7 @@ public class LocalAvatarHandController : MonoBehaviour {
         if (e.target == pickups)
         {
             activateAllBut(pickups, "Open");
-            var cp = pickups.GetComponent<PickupsTrigger>().currentPickup();
-            if (cp)
-            {
-                //Debug.Log("Going to pick up " + cp.name);
-                fixed_joint = pickups.AddComponent<FixedJoint>();
-                fixed_joint.connectedBody = cp.GetComponent<Rigidbody>();
-            }
+            pickups.GetComponent<PickupsTrigger>().onUse();
         }
         if (e.target == scissors)
         {
@@ -96,12 +92,7 @@ public class LocalAvatarHandController : MonoBehaviour {
         if (e.target == pickups)
         {
             activateAllBut(pickups, "Closed");
-            if (fixed_joint)
-            {
-                //Debug.Log("Going to drop " + fixed_joint.name);
-                fixed_joint.connectedBody = null;
-                Destroy(fixed_joint);
-            }
+            pickups.GetComponent<PickupsTrigger>().onUnuse();
         }
         if (e.target == scissors)
         {
