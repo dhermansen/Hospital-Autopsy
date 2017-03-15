@@ -19,7 +19,7 @@ public class PickupsTrigger : FlexProcessor
 {
     private List<IdMass> locked = new List<IdMass>();
     private Collider ball;
-    private bool /*is_grabbed = false, is_used = false,*/ try_pick_up = false, try_drop = false;
+    private bool try_pick_up = false, try_drop = false;
 
     private void Start()
     {
@@ -28,20 +28,16 @@ public class PickupsTrigger : FlexProcessor
 
     public void onGrab()
     {
-        //is_grabbed = true;
     }
     public void onUngrab()
     {
-        //is_grabbed = false;
     }
     public void onUse()
     {
-        //is_used = true;
         try_pick_up = true;
     }
     public void onUnuse()
     {
-        //is_used = false;
         try_drop = true;
     }
     // Use this for initialization
@@ -66,7 +62,6 @@ public class PickupsTrigger : FlexProcessor
             var locked_ctr = locked.Select(l => cntr.m_particles[l.idx].pos)
                                 .Aggregate((lhs, rhs) => lhs + rhs) / locked.Count();
 
-            //Debug.Log("Ball center " + ball.bounds.center.ToString());
             var delta = ball.bounds.center - locked_ctr;
             foreach (var l in locked)
             {

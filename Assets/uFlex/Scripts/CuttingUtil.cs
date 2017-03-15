@@ -6,7 +6,7 @@ using uFlex;
 
 public class CutFlexUtil
 {
-    public static void CutFlexSoft(Transform target, Plane plane)
+    public static void CutFlexSoft(Transform target, Plane act_plane)
     {
         var shapes = target.GetComponent<FlexShapeMatching>();
         var particles = target.GetComponent<FlexParticles>();
@@ -22,17 +22,30 @@ public class CutFlexUtil
         //For each shape, determine which indices are split from each shape by plane.
         //Store some in indices, others in otherIndices.
         //Store shape partitions in indices in offsets.
+        Debug.Log(act_plane.distance.ToString() +';'+ act_plane.normal);
         for (int i = 0; i < shapes.m_shapesCount; ++i)
         {
             int indexEnd = shapes.m_shapeOffsets[i];
 
+            var rest_plane = new Plane(act_plane.normal, act_plane.distance * act_plane.normal + shapes.m_shapeCenters[i] - shapes.m_shapeTranslations[i]);
+            Debug.Log((rest_plane.normal * rest_plane.distance).ToString()+';'+act_plane.distance+';'+(shapes.m_shapeTranslations[i] - shapes.m_shapeCenters[i]).ToString());
             var shapeCenter = shapes.m_shapeCenters[i];
             for (int j = indexBeg; j < indexEnd; ++j)
             {
                 int id = shapes.m_shapeIndices[j];
-                var particlePos = particles.m_restParticles[id].pos;
+                //Debug.LogFormat("Rest {0}\nAct {1}\nDiff {2}",
+                //    particles.m_restParticles[id].pos.ToString("F4"),
+                //    particles.m_particles[id].pos.ToString("F4"),
+                //    (particles.m_particles[id].pos - particles.m_restParticles[id].pos).ToString("F4"));
+                //Debug.LogFormat("Calc {0}\nRest {1}\nrot {2}\ntrans {3}",
+                //    (particles.m_restParticles[id].pos - shapes.m_shapeCenters[i] + shapes.m_shapeTranslations[i]).ToString("F4"),
+                //    shapes.m_shapeRestPositions[id].ToString("F4"),
+                //    shapes.m_shapeRotations[i].ToString("F4"),
+                //    shapes.m_shapeTranslations[i].ToString("F4"));
 
-                if (plane.SameSide(shapeCenter, particlePos))
+                var pos = particles.m_particles[id].pos;
+
+                if (rest_plane.SameSide(shapeCenter, pos))
                     indicies.Add(id);
                 else
                     otherIndices.Add(id);
@@ -47,7 +60,7 @@ public class CutFlexUtil
             if (!indicies.Contains(other_idx))
             {
                 int shape_index = find_closest_shape_on_same_side(
-                    shapes.m_shapeCenters, particles.m_restParticles[other_idx].pos, plane);
+                    shapes.m_shapeCenters, particles.m_restParticles[other_idx].pos, act_plane);
                 int new_shape_start_index = offsets[shape_index];
                 indicies.Insert(new_shape_start_index, other_idx);
                 for (int j = shape_index; j < offsets.Count; j++)
@@ -66,17 +79,17 @@ public class CutFlexUtil
         int shapeIndexOffset = 0;
         for (int s = 0; s < shapes.m_shapesCount; s++)
         {
-            shapes.m_shapeTranslations[s] = new Vector3();
-            shapes.m_shapeRotations[s] = Quaternion.identity;
+            //shapes.m_shapeTranslations[s] = new Vector3();
+            //shapes.m_shapeRotations[s] = Quaternion.identity;
 
             int shapeEnd = shapes.m_shapeOffsets[s];
 
             //For each particle in shape, calculate a new shape center.
-            int n_shapes = shapeEnd - shapeStart;
-            shapes.m_shapeCenters[s] = shapes.m_shapeIndices.ToList().GetRange(shapeStart, n_shapes)
-                .Aggregate(Vector3.zero, (lhs, p_idx) => lhs + particles.m_restParticles[p_idx].pos) / n_shapes;
+            int num_shapes = shapeEnd - shapeStart;
+            shapes.m_shapeCenters[s] = shapes.m_shapeIndices.ToList().GetRange(shapeStart, num_shapes)
+                .Aggregate(Vector3.zero, (lhs, p_idx) => lhs + particles.m_restParticles[p_idx].pos) / num_shapes;
             //And adjust other particles in shape to be relative to the new center.
-            var shape_offsets = shapes.m_shapeIndices.ToList().GetRange(shapeStart, n_shapes)
+            var shape_offsets = shapes.m_shapeIndices.ToList().GetRange(shapeStart, num_shapes)
                 .Select(p_idx => {
                     shapes.m_shapeRestPositions[shapeIndexOffset] = particles.m_restParticles[p_idx].pos - shapes.m_shapeCenters[s];
                     return ++shapeIndexOffset;
@@ -86,12 +99,12 @@ public class CutFlexUtil
         }
 
         //And make sure that the mesh vertices aren't influenced by shapes that are cut off.
-        Mesh mesh = target.GetComponent<SkinnedMeshRenderer>().sharedMesh;
-        var boneWeights = new BoneWeight[mesh.vertexCount];
-        for (int i = 0; i < mesh.vertexCount; i++)
-        {
-            mesh.boneWeights[i] = adjust_weight(mesh.boneWeights[i], mesh.vertices[i], shapes.m_shapeCenters, plane);
-        }
+        //Mesh mesh = target.GetComponent<SkinnedMeshRenderer>().sharedMesh;
+        //var boneWeights = new BoneWeight[mesh.vertexCount];
+        //for (int i = 0; i < mesh.vertexCount; i++)
+        //{
+        //    mesh.boneWeights[i] = adjust_weight(mesh.boneWeights[i], mesh.vertices[i], shapes.m_shapeCenters, plane);
+        //}
 
     }
     public static BoneWeight adjust_weight(BoneWeight weight, Vector3 mesh_vert, Vector3[] bones, Plane plane)
