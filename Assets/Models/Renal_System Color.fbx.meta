@@ -1,0 +1,208 @@
+fileFormatVersion: 2
+guid: 554520ea13887f541ac820c34a6366cc
+timeCreated: 1489690578
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: aorta
+    100002: bladder
+    100004: bladder_MeshPart0
+    100006: bladder_MeshPart1
+    100008: bladder_MeshPart2
+    100010: bladder_MeshPart3
+    100012: bladder_MeshPart4
+    100014: infVenaCava
+    100016: lKidney
+    100018: lUreter
+    100020: Renal_System
+    100022: //RootNode
+    100024: Renal_System_1
+    100026: Renal_System_1_MeshPart0
+    100028: Renal_System_1_MeshPart1
+    100030: Renal_System_1_MeshPart2
+    100032: Renal_System_2
+    100034: Renal_System_MeshPart0
+    100036: Renal_System_MeshPart1
+    100038: Renal_System_MeshPart2
+    100040: Renal_System_MeshPart3
+    100042: Renal_System_MeshPart4
+    100044: Renal_System_MeshPart5
+    100046: Renal_System_MeshPart6
+    100048: Renal_System_MeshPart7
+    100050: Renal_System_MeshPart8
+    100052: Renal_System_MeshPart9
+    100054: rKidney
+    100056: rUreter
+    400000: aorta
+    400002: bladder
+    400004: bladder_MeshPart0
+    400006: bladder_MeshPart1
+    400008: bladder_MeshPart2
+    400010: bladder_MeshPart3
+    400012: bladder_MeshPart4
+    400014: infVenaCava
+    400016: lKidney
+    400018: lUreter
+    400020: Renal_System
+    400022: //RootNode
+    400024: Renal_System_1
+    400026: Renal_System_1_MeshPart0
+    400028: Renal_System_1_MeshPart1
+    400030: Renal_System_1_MeshPart2
+    400032: Renal_System_2
+    400034: Renal_System_MeshPart0
+    400036: Renal_System_MeshPart1
+    400038: Renal_System_MeshPart2
+    400040: Renal_System_MeshPart3
+    400042: Renal_System_MeshPart4
+    400044: Renal_System_MeshPart5
+    400046: Renal_System_MeshPart6
+    400048: Renal_System_MeshPart7
+    400050: Renal_System_MeshPart8
+    400052: Renal_System_MeshPart9
+    400054: rKidney
+    400056: rUreter
+    2300000: aorta
+    2300002: bladder_MeshPart0
+    2300004: bladder_MeshPart1
+    2300006: bladder_MeshPart2
+    2300008: bladder_MeshPart3
+    2300010: bladder_MeshPart4
+    2300012: infVenaCava
+    2300014: lKidney
+    2300016: lUreter
+    2300018: Renal_System_1_MeshPart0
+    2300020: Renal_System_1_MeshPart1
+    2300022: Renal_System_1_MeshPart2
+    2300024: Renal_System_2
+    2300026: Renal_System_MeshPart0
+    2300028: Renal_System_MeshPart1
+    2300030: Renal_System_MeshPart2
+    2300032: Renal_System_MeshPart3
+    2300034: Renal_System_MeshPart4
+    2300036: Renal_System_MeshPart5
+    2300038: Renal_System_MeshPart6
+    2300040: Renal_System_MeshPart7
+    2300042: Renal_System_MeshPart8
+    2300044: Renal_System_MeshPart9
+    2300046: rKidney
+    2300048: rUreter
+    3300000: aorta
+    3300002: bladder_MeshPart0
+    3300004: bladder_MeshPart1
+    3300006: bladder_MeshPart2
+    3300008: bladder_MeshPart3
+    3300010: bladder_MeshPart4
+    3300012: infVenaCava
+    3300014: lKidney
+    3300016: lUreter
+    3300018: Renal_System_1_MeshPart0
+    3300020: Renal_System_1_MeshPart1
+    3300022: Renal_System_1_MeshPart2
+    3300024: Renal_System_2
+    3300026: Renal_System_MeshPart0
+    3300028: Renal_System_MeshPart1
+    3300030: Renal_System_MeshPart2
+    3300032: Renal_System_MeshPart3
+    3300034: Renal_System_MeshPart4
+    3300036: Renal_System_MeshPart5
+    3300038: Renal_System_MeshPart6
+    3300040: Renal_System_MeshPart7
+    3300042: Renal_System_MeshPart8
+    3300044: Renal_System_MeshPart9
+    3300046: rKidney
+    3300048: rUreter
+    4300000: Renal_System_2
+    4300002: Renal_System_1_MeshPart0
+    4300004: Renal_System_1_MeshPart1
+    4300006: Renal_System_1_MeshPart2
+    4300008: Renal_System_MeshPart0
+    4300010: Renal_System_MeshPart1
+    4300012: Renal_System_MeshPart2
+    4300014: Renal_System_MeshPart3
+    4300016: Renal_System_MeshPart4
+    4300018: Renal_System_MeshPart5
+    4300020: Renal_System_MeshPart6
+    4300022: Renal_System_MeshPart7
+    4300024: Renal_System_MeshPart8
+    4300026: Renal_System_MeshPart9
+    4300028: aorta
+    4300030: infVenaCava
+    4300032: lKidney
+    4300034: lUreter
+    4300036: rUreter
+    4300038: rKidney
+    4300040: bladder_MeshPart0
+    4300042: bladder_MeshPart1
+    4300044: bladder_MeshPart2
+    4300046: bladder_MeshPart3
+    4300048: bladder_MeshPart4
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

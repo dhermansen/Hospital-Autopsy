@@ -23,7 +23,7 @@ public class OverController : MonoBehaviour {
     }
     // Use this for initialization
     void Start () {
-        current_orig = GameObject.Find("Renal");
+        //current_orig = GameObject.Find("RenalSystem");
         //current_copy = dup(current_orig);
         //current_copy.SetActive(false);
 
