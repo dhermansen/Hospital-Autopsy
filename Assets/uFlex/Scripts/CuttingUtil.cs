@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿#define ACTIVE
+
+#if MYCODE
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,10 +52,10 @@ public class CuttingUtil
             for (int j = shape_start; j < shape_end; ++j)
             {
                 var particle_idx = fsm.m_shapeIndices[j];
-                //if (act_plane.SameSide(shape_center, fp.m_particles[particle_idx].pos))
+                if (act_plane.SameSide(shape_center, fp.m_particles[particle_idx].pos))
                     correct_side_indicies.Add(particle_idx);
-                //else
-                    //wrong_side_indices.Add(particle_idx);
+                else
+                    wrong_side_indices.Add(particle_idx);
             }
             offsets.Add(correct_side_indicies.Count);
             shape_start = shape_end;
@@ -190,3 +193,233 @@ public class CuttingUtil
             .Aggregate(new { idx = -1, dist = float.MaxValue }, (lhs, rhs) => lhs.dist < rhs.dist ? lhs : rhs).idx;
     }
 }
+#else
+
+using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using uFlex;
+ 
+public class CutFlexUtil
+{    public static Vector3 shape_to_world(int i, FlexShapeMatching fsm)
+    {
+        return fsm.m_shapeRotations[i] * fsm.m_shapeCenters[i] / 100.0f + fsm.m_shapeTranslations[i];
+    }
+    public static void world_to_shape(Vector3 pt, int i, FlexShapeMatching fsm)
+    {
+        fsm.m_shapeCenters[i] = Quaternion.Inverse(fsm.m_shapeRotations[i]) * (pt - fsm.m_shapeTranslations[i]) * 100.0f;
+    }
+
+    public static void CutFlexSoft(Transform target, Plane plane)
+    {
+        FlexShapeMatching shapes = target.GetComponent<FlexShapeMatching>();
+        FlexParticles particles = target.GetComponent<FlexParticles>();
+
+        List<int> indicies = new List<int>();
+        List<int> offsets = new List<int>();
+
+        List<int> otherIndices = new List<int>();
+        var centers = Enumerable.Range(0, shapes.m_shapesCount).Select(i => shape_to_world(i, shapes)).ToList();
+        int indexBeg = 0;
+        int indexEnd = 0;
+        for (int i = 0; i < shapes.m_shapesCount; ++i)
+        {
+            indexEnd = shapes.m_shapeOffsets[i];
+
+            Vector3 shapeCenter = shapes.m_shapeCenters[i];
+            for (int j = indexBeg; j < indexEnd; ++j)
+            {
+                int id = shapes.m_shapeIndices[j];
+#if ACTIVE
+                Vector3 particlePos = particles.m_particles[id].pos;
+                if (plane.SameSide(centers[i], particlePos) == false)
+#else
+                Vector3 particlePos = particles.m_restParticles[id].pos;
+                if (plane.SameSide(shapeCenter, particlePos) == false)
+#endif
+                {
+                    //if (startPlane.Equals(CutTool.DeafaultPlane) == false && startPlane.GetSide(particlePos) == false)
+                    //{
+                    //    indicies.Add(id);
+                    //}
+                    //else
+                    //{
+
+                    if (otherIndices.Contains(id) == false)
+                        {
+                            otherIndices.Add(id);
+                        }
+                    //}
+                }
+                else
+                {
+                    indicies.Add(id);
+                }
+            }
+            offsets.Add(indicies.Count);
+            indexBeg = indexEnd;
+        }
+
+        for (int i = 0; i < otherIndices.Count; i++)
+        {
+            if (indicies.Contains(otherIndices[i]) == false)
+            {
+#if ACTIVE
+                int index = FindClosedBoneIndexOnSameSide(centers.ToArray(), particles.m_particles[otherIndices[i]].pos, plane);
+#else
+                int index = FindClosedBoneIndexOnSameSide(shapes.m_shapeCenters, particles.m_restParticles[otherIndices[i]].pos, plane);
+#endif
+                int atIndex = offsets[index];
+                indicies.Insert(atIndex, otherIndices[i]);
+                for (int j = index; j < offsets.Count; j++)
+                {
+                    offsets[j] += 1;
+                }
+            }
+        }
+
+        shapes.m_shapeIndicesCount = indicies.Count;
+        shapes.m_shapeIndices = indicies.ToArray();
+        shapes.m_shapeOffsets = offsets.ToArray();
+
+        int shapeStart = 0;
+        int shapeIndex = 0;
+        int shapeIndexOffset = 0;
+        for (int s = 0; s < shapes.m_shapesCount; s++)
+        {
+            shapes.m_shapeTranslations[s] = new Vector3();
+            shapes.m_shapeRotations[s] = Quaternion.identity;
+
+            shapeIndex++;
+
+            int shapeEnd = shapes.m_shapeOffsets[s];
+            //-----------------------------------------cccc------------------------------------------------//
+
+            Vector3 cen = Vector3.zero;
+            for (int i = shapeStart; i < shapeEnd; ++i)
+            {
+                int p = shapes.m_shapeIndices[i];
+                Vector3 pos = particles.m_restParticles[p].pos;
+                cen += pos;
+            }
+            cen /= (shapeEnd - shapeStart);
+            shapes.m_shapeCenters[s] = cen;
+
+            //--------------------------------------------cccc---------------------------------------------//
+            for (int i = shapeStart; i < shapeEnd; ++i)
+            {
+                int p = shapes.m_shapeIndices[i];
+
+                // remap indices and create local space positions for each shape
+                Vector3 pos = particles.m_restParticles[p].pos;
+                shapes.m_shapeRestPositions[shapeIndexOffset] = pos - shapes.m_shapeCenters[s];
+
+                shapeIndexOffset++;
+            }
+
+            shapeStart = shapeEnd;
+        }
+
+
+        //Mesh mesh = target.GetComponent<SkinnedMeshRenderer>().sharedMesh;
+        //BoneWeight[] boneWeights = new BoneWeight[mesh.vertexCount];
+        //for (int i = 0; i < mesh.vertexCount; i++)
+        //{
+        //    boneWeights[i] = mesh.boneWeights[i];
+        //    Vector3 vertexPos = mesh.vertices[i];
+        //    mesh.boneWeights[i] = CheckWeight(boneWeights[i], vertexPos, shapes.m_shapeCenters, plane);
+        //}
+
+    }
+    public static BoneWeight CheckWeight(BoneWeight weight, Vector3 vert, Vector3[] bones, Plane plane)
+    {
+        //return weight;
+        Vector3 shapeCenter = bones[weight.boneIndex0];
+        float value;
+
+        int flag = 0;
+        if (plane.SameSide(shapeCenter, vert) == false)
+        {
+            value = weight.weight0;
+            weight.weight0 = 0;
+
+
+            int index = FindClosedBoneIndexOnSameSide(new Vector3[] { bones[weight.boneIndex1], bones[weight.boneIndex2], bones[weight.boneIndex3] }, vert, plane);
+            if (index == 0) weight.weight1 += value;
+            else if (index == 1) weight.weight2 += value;
+            else if (index == 2) weight.weight3 += value;
+
+            flag++;
+        }
+
+        shapeCenter = bones[weight.boneIndex1];
+        if (plane.SameSide(shapeCenter, vert) == false)
+        {
+            value = weight.weight1;
+            weight.weight1 = 0;
+            //
+            int index = FindClosedBoneIndexOnSameSide(new Vector3[] { bones[weight.boneIndex0], bones[weight.boneIndex2], bones[weight.boneIndex3] }, vert, plane);
+            if (index == 0) weight.weight0 += value;
+            else if (index == 1) weight.weight2 += value;
+            else if (index == 2) weight.weight3 += value;
+            flag++;
+        }
+        shapeCenter = bones[weight.boneIndex2];
+        if (plane.SameSide(shapeCenter, vert) == false)
+        {
+            value = weight.weight2;
+            weight.weight2 = 0;
+
+            int index = FindClosedBoneIndexOnSameSide(new Vector3[] { bones[weight.boneIndex0], bones[weight.boneIndex1], bones[weight.boneIndex3] }, vert, plane);
+            if (index == 0) weight.weight0 += value;
+            else if (index == 1) weight.weight1 += value;
+            else if (index == 2) weight.weight3 += value;
+
+            flag++;
+        }
+        shapeCenter = bones[weight.boneIndex3];
+        if (plane.SameSide(shapeCenter, vert) == false)
+        {
+            value = weight.weight3;
+            weight.weight3 = 0;
+
+            int index = FindClosedBoneIndexOnSameSide(new Vector3[] { bones[weight.boneIndex0], bones[weight.boneIndex1], bones[weight.boneIndex2] }, vert, plane);
+            if (index == 0) weight.weight0 += value;
+            else if (index == 1) weight.weight1 += value;
+            else if (index == 2) weight.weight2 += value;
+
+            flag++;
+        }
+        if (flag > 3)
+        {
+            Debug.Log(weight.weight0 + "------" + weight.weight1 + "------" + weight.weight2 + "------" + weight.weight3);
+
+            weight.boneIndex0 = FindClosedBoneIndexOnSameSide(bones, vert, plane);
+            weight.weight0 = 1;
+        }
+
+        return weight;
+
+    }
+
+    public static int FindClosedBoneIndexOnSameSide(Vector3[] BonePos, Vector3 vert, Plane plane)
+    {
+        int index = -1;
+        float dis = float.MaxValue;
+        for (int i = 0; i < BonePos.Length; i++)
+        {
+            if (plane.SameSide(BonePos[i], vert))
+            {
+                if (Vector3.Distance(BonePos[i], vert) < dis)
+                {
+                    index = i;
+                    dis = Vector3.Distance(BonePos[i], vert);
+                }
+            }
+        }
+        return index;
+    }
+}
+
+#endif
