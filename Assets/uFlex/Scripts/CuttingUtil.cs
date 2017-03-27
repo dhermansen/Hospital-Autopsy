@@ -231,26 +231,13 @@ public class CutFlexUtil
             for (int j = indexBeg; j < indexEnd; ++j)
             {
                 int id = shapes.m_shapeIndices[j];
-#if ACTIVE
                 Vector3 particlePos = particles.m_particles[id].pos;
-                if (plane.SameSide(centers[i], particlePos) == false)
-#else
-                Vector3 particlePos = particles.m_restParticles[id].pos;
-                if (plane.SameSide(shapeCenter, particlePos) == false)
-#endif
+                if (!plane.SameSide(centers[i], particlePos) && stop_plane.GetSide(particlePos))
                 {
-                    //if (startPlane.Equals(CutTool.DeafaultPlane) == false && startPlane.GetSide(particlePos) == false)
-                    //{
-                    //    indicies.Add(id);
-                    //}
-                    //else
-                    //{
-
-                    if (otherIndices.Contains(id) == false)
-                        {
-                            otherIndices.Add(id);
-                        }
-                    //}
+                    if (!otherIndices.Contains(id))
+                    {
+                        otherIndices.Add(id);
+                    }
                 }
                 else
                 {
@@ -263,13 +250,9 @@ public class CutFlexUtil
 
         for (int i = 0; i < otherIndices.Count; i++)
         {
-            if (indicies.Contains(otherIndices[i]) == false)
+            if (!indicies.Contains(otherIndices[i]))
             {
-#if ACTIVE
                 int index = FindClosedBoneIndexOnSameSide(centers.ToArray(), particles.m_particles[otherIndices[i]].pos, plane);
-#else
-                int index = FindClosedBoneIndexOnSameSide(shapes.m_shapeCenters, particles.m_restParticles[otherIndices[i]].pos, plane);
-#endif
                 int atIndex = offsets[index];
                 indicies.Insert(atIndex, otherIndices[i]);
                 for (int j = index; j < offsets.Count; j++)

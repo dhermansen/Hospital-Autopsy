@@ -8,27 +8,34 @@ public class softbodyinfo : FlexProcessor {
     GameObject renal;
     Plane plane;
     Plane stop_plane;
-    bool has_cut = false;
+    Plane curr_stop_plane;
+    int times = 0;
+    //bool has_cut = false;
     List<Color> colors = new List<Color>();
+    float? time;
 	// Use this for initialization
 	void Start () {
         renal = GameObject.Find("RenalSystemColor");
         var fsm = renal.GetComponent<FlexShapeMatching>();
         plane = new Plane(new Vector3(1, 0, 0), renal.transform.position);
-        stop_plane = new Plane(new Vector3(0, 0, 1), renal.transform.position);
+        stop_plane = new Plane(new Vector3(0, 0, 1), renal.transform.position + new Vector3(0, 0, 5));
     }
 
     // Update is called once per frame
     public override void PostContainerUpdate(FlexSolver solver, FlexContainer cntr, FlexParameters parameters)
     {
+        if (!time.HasValue)
+            time = Time.time;
 
-        if (!has_cut)
+        var secs = Time.time - time.Value;
+        var origin = -stop_plane.distance * stop_plane.normal;
+        curr_stop_plane = new Plane(stop_plane.normal, origin - 5*secs * stop_plane.normal);
+
+        Debug.Log(++times);
+        if (times == 20 || times == 10 || times == 15 || times == 25)
         {
-            has_cut = true;
-            CutFlexUtil.CutFlexSoft(renal.transform, plane, stop_plane);
+            CutFlexUtil.CutFlexSoft(renal.transform, plane, curr_stop_plane);
         }
-
-
     }
 
     private void OnDrawGizmos()
@@ -59,6 +66,11 @@ public class softbodyinfo : FlexProcessor {
         //}
         //Gizmos.color = Color.red;
         //Gizmos.DrawCube(renal.transform.position, new Vector3(0.1f, 20.0f, 20.0f));
+        Gizmos.color = Color.green;
+        Gizmos.DrawCube(-stop_plane.normal * stop_plane.distance, new Vector3(20.0f, 20.0f, 0.1f));
+        Gizmos.color = Color.red;
+        Gizmos.DrawCube(-curr_stop_plane.normal * curr_stop_plane.distance, new Vector3(20.0f, 20.0f, 0.1f));
+
         //for (int i = 0; i < fp.m_particlesCount; ++i)
         //{
         //    if (colors.Count > 0)
