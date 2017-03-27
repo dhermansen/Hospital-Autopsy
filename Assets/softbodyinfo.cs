@@ -7,6 +7,7 @@ using uFlex;
 public class softbodyinfo : FlexProcessor {
     GameObject renal;
     Plane plane;
+    Plane stop_plane;
     bool has_cut = false;
     List<Color> colors = new List<Color>();
 	// Use this for initialization
@@ -14,31 +15,26 @@ public class softbodyinfo : FlexProcessor {
         renal = GameObject.Find("RenalSystemColor");
         var fsm = renal.GetComponent<FlexShapeMatching>();
         plane = new Plane(new Vector3(1, 0, 0), renal.transform.position);
+        stop_plane = new Plane(new Vector3(0, 0, 1), renal.transform.position);
     }
-    public override void FlexStart(FlexSolver solver, FlexContainer cntr, FlexParameters parameters)
-    {
-        base.FlexStart(solver, cntr, parameters);
-        //CutFlexUtil.CutFlexSoft(renal.transform, plane);
-        //colors = CuttingUtil.CutFlexSoft(renal.transform, plane);
 
-    }
     // Update is called once per frame
     public override void PostContainerUpdate(FlexSolver solver, FlexContainer cntr, FlexParameters parameters)
     {
 
-        //if (!has_cut)
-        //{
-        //    has_cut = true;
-        //    colors = CuttingUtil.CutFlexSoft(renal.transform, plane);
-        //}
+        if (!has_cut)
+        {
+            has_cut = true;
+            CutFlexUtil.CutFlexSoft(renal.transform, plane, stop_plane);
+        }
 
 
     }
 
     private void OnDrawGizmos()
     {
-        var fp = renal.GetComponent<FlexParticles>();
-        var fsm = renal.GetComponent<FlexShapeMatching>();
+        //var fp = renal.GetComponent<FlexParticles>();
+        //var fsm = renal.GetComponent<FlexShapeMatching>();
         //int shapeStart = 0;
         //for (var i = 0; i < fsm.m_shapesCount; ++i)
         //{

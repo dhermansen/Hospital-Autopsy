@@ -211,7 +211,7 @@ public class CutFlexUtil
         fsm.m_shapeCenters[i] = Quaternion.Inverse(fsm.m_shapeRotations[i]) * (pt - fsm.m_shapeTranslations[i]) * 100.0f;
     }
 
-    public static void CutFlexSoft(Transform target, Plane plane)
+    public static void CutFlexSoft(Transform target, Plane plane, Plane stop_plane)
     {
         FlexShapeMatching shapes = target.GetComponent<FlexShapeMatching>();
         FlexParticles particles = target.GetComponent<FlexParticles>();
