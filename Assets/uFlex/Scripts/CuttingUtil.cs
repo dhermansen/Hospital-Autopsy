@@ -211,7 +211,7 @@ public class CutFlexUtil
         fsm.m_shapeCenters[i] = Quaternion.Inverse(fsm.m_shapeRotations[i]) * (pt - fsm.m_shapeTranslations[i]) * 100.0f;
     }
 
-    public static void CutFlexSoft(Transform target, Plane plane, Plane stop_plane)
+    public static void CutFlexSoft(Transform target, Plane plane, Plane stop_plane, float thickness)
     {
         FlexShapeMatching shapes = target.GetComponent<FlexShapeMatching>();
         FlexParticles particles = target.GetComponent<FlexParticles>();
@@ -232,7 +232,7 @@ public class CutFlexUtil
             {
                 int id = shapes.m_shapeIndices[j];
                 Vector3 particlePos = particles.m_particles[id].pos;
-                if (!plane.SameSide(centers[i], particlePos) && stop_plane.GetSide(particlePos))
+                if (!plane.SameSide(centers[i], particlePos) && (stop_plane.GetSide(particlePos) != stop_plane.GetSide(particlePos - stop_plane.normal * thickness)))
                 {
                     if (!otherIndices.Contains(id))
                     {
@@ -247,7 +247,8 @@ public class CutFlexUtil
             offsets.Add(indicies.Count);
             indexBeg = indexEnd;
         }
-
+        if (otherIndices.Count == 0)
+            return;
         for (int i = 0; i < otherIndices.Count; i++)
         {
             if (!indicies.Contains(otherIndices[i]))
@@ -261,7 +262,12 @@ public class CutFlexUtil
                 }
             }
         }
-
+        if (indicies.Count - shapes.m_shapeIndicesCount != 0)
+        {
+            Debug.LogFormat("Shape counts difference: {0}",
+                indicies.Count - shapes.m_shapeIndicesCount);
+            Debug.LogFormat("Shape count: {0}", offsets.Count);
+        }
         shapes.m_shapeIndicesCount = indicies.Count;
         shapes.m_shapeIndices = indicies.ToArray();
         shapes.m_shapeOffsets = offsets.ToArray();
