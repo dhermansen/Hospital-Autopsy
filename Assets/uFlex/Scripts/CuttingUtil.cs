@@ -210,8 +210,13 @@ public class CutFlexUtil
     {
         fsm.m_shapeCenters[i] = Quaternion.Inverse(fsm.m_shapeRotations[i]) * (pt - fsm.m_shapeTranslations[i]) * 100.0f;
     }
-
-    public static void CutFlexSoft(Transform target, Plane plane, Plane stop_plane, float thickness)
+    private static bool sliced_by_shape(Vector3 particle_pos, Vector3 shape_center, Plane plane, Collider collider)
+    {
+        if (plane.SameSide(shape_center, particle_pos))
+            return false;
+        return collider.bounds.IntersectRay(new Ray(shape_center, particle_pos - shape_center));
+    }
+    public static void CutFlexSoft(Transform target, Vector3 blade1, Vector3 blade2, Vector3 blade3, Collider collider)
     {
         FlexShapeMatching shapes = target.GetComponent<FlexShapeMatching>();
         FlexParticles particles = target.GetComponent<FlexParticles>();
@@ -223,6 +228,7 @@ public class CutFlexUtil
         var centers = Enumerable.Range(0, shapes.m_shapesCount).Select(i => shape_to_world(i, shapes)).ToList();
         int indexBeg = 0;
         int indexEnd = 0;
+        var plane = new Plane(blade1, blade2, blade3);
         for (int i = 0; i < shapes.m_shapesCount; ++i)
         {
             indexEnd = shapes.m_shapeOffsets[i];
@@ -232,7 +238,7 @@ public class CutFlexUtil
             {
                 int id = shapes.m_shapeIndices[j];
                 Vector3 particlePos = particles.m_particles[id].pos;
-                if (!plane.SameSide(centers[i], particlePos) && (stop_plane.GetSide(particlePos) != stop_plane.GetSide(particlePos - stop_plane.normal * thickness)))
+                if (sliced_by_shape(particlePos, centers[i], plane, collider))
                 {
                     if (!otherIndices.Contains(id))
                     {

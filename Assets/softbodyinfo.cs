@@ -6,31 +6,22 @@ using uFlex;
 
 public class softbodyinfo : FlexProcessor {
     GameObject renal;
-    GameObject long_knife;
     Transform pd1, pd2, pd3;
-    Plane plane;
-    Plane stop_plane;   
-    Plane curr_stop_plane;
-    float slice_thickness = 0.3f;
-    float? time;
-    int count = 0;
+    Collider blade_collider;
 	// Use this for initialization
 	void Start () {
         renal = GameObject.Find("RenalSystemColor");
-        var fsm = renal.GetComponent<FlexShapeMatching>();
-        plane = new Plane(new Vector3(1, 0, 0), renal.transform.position);
-        stop_plane = new Plane(new Vector3(0, 0, 1), renal.transform.position + new Vector3(0, 0, 10));
 
-        long_knife = GameObject.Find("Long Knife");
-        pd1 = long_knife.transform.Find("CuttingPlane").transform;
-        pd2 = long_knife.transform.Find("StopPlane").transform;
-        pd3 = long_knife.transform.Find("Blade/Attachable Slicer/PlaneDefinition3").transform;
+        var long_knife = GameObject.Find("Long Knife");
+        var blade = long_knife.transform.Find("Blade");
+        blade_collider = blade.GetComponent<MeshCollider>();
+        pd1 = blade.Find("Attachable Slicer/PlaneDefinition1");
+        pd2 = blade.Find("Attachable Slicer/PlaneDefinition2");
+        pd3 = blade.Find("Attachable Slicer/PlaneDefinition3");
     }
 
     public override void PostContainerUpdate(FlexSolver solver, FlexContainer cntr, FlexParameters parameters)
     {
-        plane = new Plane(pd1.position, pd2.position, pd3.position);
-        stop_plane = new Plane(Vector3.Cross(pd2.position - pd1.position, pd3.position - pd1.position), pd1.position, pd2.position);
         //if (!time.HasValue)
         //    time = Time.time;
         ////if (count % 2 == 0)
@@ -40,15 +31,10 @@ public class softbodyinfo : FlexProcessor {
         //    var origin = -stop_plane.distance * stop_plane.normal;
         //    curr_stop_plane = new Plane(stop_plane.normal, origin - 2 * secs * stop_plane.normal);
 
-        //    CutFlexUtil.CutFlexSoft(renal.transform, plane, curr_stop_plane, slice_thickness);
+        CutFlexUtil.CutFlexSoft(renal.transform, pd1.position, pd3.position, pd2.position, blade_collider);
         //}
     }
-    private void draw_decent_plane(Plane p)
-    {
-        var origin = -p.normal * p.distance;
-        Gizmos.DrawCube(origin, new Vector3(1, 1, 1));
-        Gizmos.DrawLine(origin, origin + p.normal);
-    }
+
     private void OnDrawGizmos()
     {
         //var fp = renal.GetComponent<FlexParticles>();
@@ -79,10 +65,6 @@ public class softbodyinfo : FlexProcessor {
         //Gizmos.DrawLine(pd1.position, pd2.position);
         //Gizmos.DrawLine(pd2.position, pd3.position);
         //Gizmos.DrawLine(pd3.position, pd1.position);
-        Gizmos.color = Color.red;
-        draw_decent_plane(plane);
-        Gizmos.color = Color.green;
-        draw_decent_plane(stop_plane);
         //Gizmos.color = Color.red;
         //Gizmos.DrawCube(-curr_stop_plane.normal * curr_stop_plane.distance, new Vector3(0.1f, 20.0f, 0.1f));
         //Gizmos.color = Color.green;
@@ -105,11 +87,11 @@ public class softbodyinfo : FlexProcessor {
         //        Gizmos.color = colors[i];
         //    Gizmos.DrawCube(pos, new Vector3(0.2f, 0.2f, 0.2f));
         //}
-        //Gizmos.color = Color.green;
-        //Gizmos.DrawCube(pd1.position, new Vector3(1.2f, 1.2f, 1.2f));
-        //Gizmos.color = Color.red;
-        //Gizmos.DrawCube(pd2.position, new Vector3(1.2f, 1.2f, 1.2f));
-        //Gizmos.color = Color.blue;
-        //Gizmos.DrawCube(pd3.position, new Vector3(1.2f, 1.2f, 1.2f));
+        Gizmos.color = Color.green;
+        Gizmos.DrawCube(pd1.position, new Vector3(1.2f, 1.2f, 1.2f));
+        Gizmos.color = Color.red;
+        Gizmos.DrawCube(pd2.position, new Vector3(1.2f, 1.2f, 1.2f));
+        Gizmos.color = Color.blue;
+        Gizmos.DrawCube(pd3.position, new Vector3(1.2f, 1.2f, 1.2f));
     }
 }
