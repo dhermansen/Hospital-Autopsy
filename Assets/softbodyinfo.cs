@@ -8,71 +8,61 @@ public class slice_job
 {
     public NobleMuffins.TurboSlicer.Guts.MeshSnapshot snapshot;
     public List<Vector3> pts;
-    public Collider collider;
+    public List<Vector3> quad_pts;
+    public Matrix4x4 transform;
     public bool is_done = false;
 }
 public static class ft
 {
-    private static bool intersect(Vector3 p1, Vector3 p2, Vector3 p3, Ray ray)
+    private static bool intersects(Vector3 tri1, Vector3 tri2, Vector3 tri3, Vector3 p1, Vector3 p2)
     {
+        var d = p2 - p1;
         // Vectors from p1 to p2/p3 (edges)
-        Vector3 e1, e2;
-
-        Vector3 p, q, t;
-        float det, invDet, u, v;
-
-
-        //Find vectors for two edges sharing vertex/point p1
-        e1 = p2 - p1;
-        e2 = p3 - p1;
-
-        // calculating determinant 
-        p = Vector3.Cross(ray.direction, e2);
-
-        //Calculate determinat
-        det = Vector3.Dot(e1, p);
-
+        var e1 = tri2 - tri1;
+        var e2 = tri3 - tri1;
+        var s1 = Vector3.Cross(d, e2);
+        var divisor = Vector3.Dot(s1, e1);
         //if determinant is near zero, ray lies in plane of triangle otherwise not
-        if (det > -1e-6 && det < 1e-6) { return false; }
-        invDet = 1.0f / det;
+        if (Mathf.Abs(divisor) < 1e-6)
+            return false;
+        var inv_divisor = 1.0f / divisor;
 
         //calculate distance from p1 to ray origin
-        t = ray.origin - p1;
+        var d1 = p1 - tri1;
+        var b1 = Vector3.Dot(d1, s1) * inv_divisor;
+        if (b1 < 0.0f || b1 > 1.0f)
+            return false;
+        var s2 = Vector3.Cross(d1, e1);
+        var b2 = Vector3.Dot(d, s2) * inv_divisor;
+        if (b2 < 0.0f || b1 + b2 > 1.0f)
+            return false;
 
-        //Calculate u parameter
-        u = Vector3.Dot(t, p) * invDet;
-
-        //Check for ray hit
-        if (u < 0 || u > 1) { return false; }
-
-        //Prepare to test v parameter
-        q = Vector3.Cross(t, e1);
-
-        //Calculate v parameter
-        v = Vector3.Dot(ray.direction, q) * invDet;
-
-        //Check for ray hit
-        if (v < 0 || u + v > 1) { return false; }
-
-        if ((Vector3.Dot(e2, q) * invDet) > 1e-6)
-        {
-            //ray does intersect
-            return true;
-        }
-
-        // No hit at all
-        return false;
+        var t = Vector3.Dot(e2, s2) * inv_divisor;
+        return t >= 0.0f && t <= 1.0f;
+    }
+    private static bool intersects_quad(List<Vector3> quad_pts, Vector3 p1, Vector3 p2)
+    {
+        return intersects(quad_pts[0], quad_pts[1], quad_pts[2], p1, p2) ||
+               intersects(quad_pts[0], quad_pts[2], quad_pts[3], p1, p2);
     }
     public static void find_triangles(slice_job sj)
     {
+        sj.pts = new List<Vector3>();
         for (int m = 0; m < sj.snapshot.indices.Count(); ++m)
         {
             for (int i = 0; i < sj.snapshot.indices[m].Count(); i += 3)
             {
-                var p1 = sj.snapshot.vertices[sj.snapshot.indices[m][i + 0]];
-                var p2 = sj.snapshot.vertices[sj.snapshot.indices[m][i + 1]];
-                var p3 = sj.snapshot.vertices[sj.snapshot.indices[m][i + 2]];
-                sj.collider.bounds.IntersectRay()
+                var p1 = sj.transform.MultiplyPoint3x4(sj.snapshot.vertices[sj.snapshot.indices[m][i + 0]]);
+                var p2 = sj.transform.MultiplyPoint3x4(sj.snapshot.vertices[sj.snapshot.indices[m][i + 1]]);
+                var p3 = sj.transform.MultiplyPoint3x4(sj.snapshot.vertices[sj.snapshot.indices[m][i + 2]]);
+                if (intersects_quad(sj.quad_pts, p1, p2) ||
+                    intersects_quad(sj.quad_pts, p2, p3) ||
+                    intersects_quad(sj.quad_pts, p3, p1))
+                {
+                    sj.pts.Add(p1);
+                    sj.pts.Add(p2);
+                    sj.pts.Add(p3);
+                }
             }
         }
         sj.is_done = true;
@@ -85,6 +75,7 @@ public class softbodyinfo : FlexProcessor {
     List<Vector3> pts = new List<Vector3>();
     float? time;
     bool has_cut = false;
+    bool has_added = false;
     slice_job sj = new slice_job();
 
 	// Use this for initialization
@@ -109,9 +100,7 @@ public class softbodyinfo : FlexProcessor {
     {
         if (!time.HasValue)
             time = Time.time;
-        var new_pts = CutFlexUtil.CutFlexSoft(renal.transform, pd1.position, pd3.position, pd2.position, blade_collider);
-        if (new_pts != null)
-            pts.AddRange(new_pts);
+        CutFlexUtil.CutFlexSoft(renal.transform, pd1.position, pd3.position, pd2.position, blade_collider);
 
         if (!has_cut && Time.time > 2 + time.Value)
         {
@@ -137,14 +126,22 @@ public class softbodyinfo : FlexProcessor {
                                             //channelTangents ? mesh.tangents : new Vector4[0],
                                             indices,
                                             null);
+            sj.transform = renal.transform.localToWorldMatrix;
+            var ul = box.bounds.center + new Vector3(0, -box.bounds.extents.y / 2, -box.bounds.extents.z / 2);
+            var ur = box.bounds.center + new Vector3(0, +box.bounds.extents.y / 2, -box.bounds.extents.z / 2);
+            var lr = box.bounds.center + new Vector3(0, +box.bounds.extents.y / 2, +box.bounds.extents.z / 2);
+            var ll = box.bounds.center + new Vector3(0, -box.bounds.extents.y / 2, +box.bounds.extents.z / 2);
+            sj.quad_pts = new List<Vector3>{ ul, ur, lr, ll };
             System.Threading.ThreadPool.QueueUserWorkItem((state_info) => ft.find_triangles(sj));
+            //ft.find_triangles(sj);
         }
     }
     public void Update()
     {
-        if (sj.is_done)
+        if (sj.is_done && !has_added)
         {
-            Debug.Log("Done!");
+            has_added = true;
+            pts = sj.pts;
         }
     }
     private void OnDrawGizmos()
@@ -159,5 +156,7 @@ public class softbodyinfo : FlexProcessor {
         }
         //Gizmos.color = Color.blue;
         //Gizmos.DrawWireCube(renal.transform.position + new Vector3(3.0f, -4.0f, -3.5f), new Vector3(0.2f, 1.0f, 4.0f));
+        Gizmos.color = Color.red;
+        //Gizmos.DrawCube(box.bounds.center + new Vector3(0, box.bounds.extents.y, 0
     }
 }

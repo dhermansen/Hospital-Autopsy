@@ -21,7 +21,7 @@ public class CutFlexUtil
             return false;
         return collider.bounds.IntersectRay(new Ray(shape_center, particle_pos - shape_center));
     }
-    public static List<Vector3> CutFlexSoft(Transform target, Vector3 blade1, Vector3 blade2, Vector3 blade3, Collider collider)
+    public static void CutFlexSoft(Transform target, Vector3 blade1, Vector3 blade2, Vector3 blade3, Collider collider)
     {
         FlexShapeMatching shapes = target.GetComponent<FlexShapeMatching>();
         FlexParticles particles = target.GetComponent<FlexParticles>();
@@ -59,7 +59,7 @@ public class CutFlexUtil
             indexBeg = indexEnd;
         }
         if (otherIndices.Count == 0)
-            return null;
+            return;
         for (int i = 0; i < otherIndices.Count; i++)
         {
             if (!indicies.Contains(otherIndices[i]))
@@ -121,10 +121,6 @@ public class CutFlexUtil
             shapeStart = shapeEnd;
         }
 
-
-        //var mesh = new Mesh();
-        //target.GetComponent<SkinnedMeshRenderer>().BakeMesh(mesh);
-        var pts = new List<Vector3>();
         //for (int i = 0, endi = mesh.triangles.Count(); i < endi; i += 3)
         //{
         //    var pt1 = mesh.vertices[i+0];
@@ -145,7 +141,6 @@ public class CutFlexUtil
         //    Vector3 vertexPos = mesh.vertices[i];
         //    mesh.boneWeights[i] = CheckWeight(boneWeights[i], vertexPos, shapes.m_shapeCenters, plane);
         //}
-        return pts;
     }
     public static BoneWeight CheckWeight(BoneWeight weight, Vector3 vert, Vector3[] bones, Plane plane)
     {
