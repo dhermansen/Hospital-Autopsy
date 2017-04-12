@@ -104,14 +104,14 @@ public class CutFlexUtil
                intersects(blade2, blade3, blade4, p1, p2) ||
                intersects(blade2, blade3, blade1, p1, p2)*/;
     }
-    public static void CutFlexSoft(Transform target, Vector3 blade1, Vector3 blade2, Vector3 blade3, Vector3 blade4, Collider c)
+    public static void CutFlexSoft(Transform target, Vector3 blade1, Vector3 blade2, Vector3 blade3, Vector3 blade4)
     {
         FlexShapeMatching shapes = target.GetComponent<FlexShapeMatching>();
         FlexParticles particles = target.GetComponent<FlexParticles>();
 
         List<int> indicies = new List<int>();
         List<int> offsets = new List<int>();
-        Debug.Log("Blade: " + blade1.ToString("F4") + blade2.ToString("F4") + blade3.ToString("F4") + blade4.ToString("F4") );
+        //Debug.Log("Blade: " + blade1.ToString("F4") + blade2.ToString("F4") + blade3.ToString("F4") + blade4.ToString("F4") );
         List <int> otherIndices = new List<int>();
         var centers = Enumerable.Range(0, shapes.m_shapesCount).Select(i => shape_to_world(i, shapes)).ToList();
         int indexBeg = 0;
@@ -127,17 +127,17 @@ public class CutFlexUtil
                 int id = shapes.m_shapeIndices[j];
                 Vector3 particlePos = particles.m_particles[id].pos;
                 var qisect = intersects_quad(particlePos, centers[i], blade1, blade2, blade3, blade4);
-                var cisect = !plane.SameSide(particlePos, centers[i]) && c.bounds.IntersectRay(new Ray(particlePos, centers[i] - particlePos));
-                if (qisect && !cisect)
-                {
-                    Debug.Log("Unwanted: " + particlePos.ToString("F4") + ';' + centers[i].ToString("F4"));
-                    intersects_quad(particlePos, centers[i], blade1, blade2, blade3, blade4, true);
-                }
-                if (!qisect && cisect)
-                {
-                    Debug.Log("Wanted: " + particlePos.ToString("F4") + ';' + centers[i].ToString("F4"));
-                    intersects_quad(particlePos, centers[i], blade1, blade2, blade3, blade4, true);
-                }
+                //var cisect = !plane.SameSide(particlePos, centers[i]) && c.bounds.IntersectRay(new Ray(particlePos, centers[i] - particlePos));
+                //if (qisect && !cisect)
+                //{
+                //    Debug.Log("Unwanted: " + particlePos.ToString("F4") + ';' + centers[i].ToString("F4"));
+                //    intersects_quad(particlePos, centers[i], blade1, blade2, blade3, blade4, true);
+                //}
+                //if (!qisect && cisect)
+                //{
+                //    Debug.Log("Wanted: " + particlePos.ToString("F4") + ';' + centers[i].ToString("F4"));
+                //    intersects_quad(particlePos, centers[i], blade1, blade2, blade3, blade4, true);
+                //}
                 if (qisect)
                 {
                     if (!otherIndices.Contains(id))

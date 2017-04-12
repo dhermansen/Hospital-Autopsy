@@ -79,7 +79,7 @@ public class softbodyinfo : FlexProcessor {
     {
         if (!time.HasValue)
             time = Time.time;
-        //CutFlexUtil.CutFlexSoft(renal.transform, pd1.position, pd3.position, pd2.position, blade_collider);
+        CutFlexUtil.CutFlexSoft(renal.transform, pd1.position, pd2.position, pd3.position, pd4.position);
 
         if (!has_cut && Time.time > 2 + time.Value)
         {
@@ -91,7 +91,7 @@ public class softbodyinfo : FlexProcessor {
             var ur = box.bounds.center + new Vector3(0, +box.bounds.extents.y / 2, -box.bounds.extents.z / 2);
             var lr = box.bounds.center + new Vector3(0, +box.bounds.extents.y / 2, +box.bounds.extents.z / 2);
             var ll = box.bounds.center + new Vector3(0, -box.bounds.extents.y / 2, +box.bounds.extents.z / 2);
-            CutFlexUtil.CutFlexSoft(renal.transform, ul, ur, lr, ll, box);
+            //CutFlexUtil.CutFlexSoft(renal.transform, ul, ur, lr, ll);
             /*
             var mesh = new Mesh();
             renal.GetComponent<SkinnedMeshRenderer>().BakeMesh(mesh);
