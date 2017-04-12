@@ -5,9 +5,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using uFlex;
- 
+
 public class CutFlexUtil
-{    public static Vector3 shape_to_world(int i, FlexShapeMatching fsm)
+{
+    public static Vector3 shape_to_world(int i, FlexShapeMatching fsm)
     {
         return fsm.m_shapeRotations[i] * fsm.m_shapeCenters[i] / 100.0f + fsm.m_shapeTranslations[i];
     }
@@ -15,21 +16,103 @@ public class CutFlexUtil
     {
         fsm.m_shapeCenters[i] = Quaternion.Inverse(fsm.m_shapeRotations[i]) * (pt - fsm.m_shapeTranslations[i]) * 100.0f;
     }
-    private static bool sliced_by_shape(Vector3 particle_pos, Vector3 shape_center, Plane plane, Collider collider)
+    private static bool intersects(Vector3 tri1, Vector3 tri2, Vector3 tri3, Vector3 p1, Vector3 p2, bool debug)
     {
-        if (plane.SameSide(shape_center, particle_pos))
+        Vector3 u, v, n;              // triangle vectors
+        Vector3 dir, w0, w;           // ray vectors
+        float r, a, b;              // params to calc ray-plane intersect
+
+        // get triangle edge vectors and plane normal
+        u = tri2 - tri1;
+        v = tri3 - tri1;
+        n = Vector3.Cross(u, v);              // cross product
+        //if (n == (Vector)0)             // triangle is degenerate
+        //    return false;                  // do not deal with this case
+
+        dir = p2 - p1;              // ray direction vector
+        w0 = p1 - tri1;
+        a = -Vector3.Dot(n, w0);
+        b = Vector3.Dot(n, dir);
+        if (Mathf.Abs(b) < 1e-6)
+        {     // ray is  parallel to triangle plane
+            //if (a == 0)                 // ray lies in triangle plane
+            //    return 2;
+            //else return 0;              // ray disjoint from plane
             return false;
-        return collider.bounds.IntersectRay(new Ray(shape_center, particle_pos - shape_center));
+        }
+
+        // get intersect point of ray with triangle plane
+        r = a / b;
+        if (debug)
+            Debug.LogFormat("r: {0}", r);
+        if (r < 0.0f || r > 1.0f)                    // ray goes away from triangle
+            return false;                   // => no intersect
+                                        // for a segment, also test if (r > 1.0) => no intersect
+
+        var I = p1 + r * dir;            // intersect point of ray and plane
+
+        // is I inside T?
+        float uu, uv, vv, wu, wv, D;
+        uu = Vector3.Dot(u, u);
+        uv = Vector3.Dot(u, v);
+        vv = Vector3.Dot(v, v);
+        w = I - tri1;
+        wu = Vector3.Dot(w, u);
+        wv = Vector3.Dot(w, v);
+        D = uv * uv - uu * vv;
+
+        // get and test parametric coords
+        float s, t;
+        s = (uv * wv - vv * wu) / D;
+        if (s < 0.0 || s > 1.0)         // I is outside T
+            return false;
+        t = (uv * wu - uu * wv) / D;
+        if (t < 0.0 || (s + t) > 1.0)  // I is outside T
+            return false;
+
+        return true;                       // I is in T
     }
-    public static void CutFlexSoft(Transform target, Vector3 blade1, Vector3 blade2, Vector3 blade3, Collider collider)
+    //{
+    //    var rayd = p2 - p1;
+    //    // Vectors from p1 to p2/p3 (edges)
+    //    var e1 = tri2 - tri1;
+    //    var e2 = tri3 - tri1;
+    //    var s1 = Vector3.Cross(rayd, e2);
+    //    var divisor = Vector3.Dot(s1, e1);
+    //    //if determinant is near zero, ray lies in plane of triangle otherwise not
+    //    if (Mathf.Abs(divisor) < 1e-6)
+    //        return false;
+    //    var inv_divisor = 1.0f / divisor;
+
+    //    //calculate distance from p1 to ray origin
+    //    var d = p1 - tri1;
+    //    var b1 = Vector3.Dot(d, s1) * inv_divisor;
+    //    if (b1 < 0.0f || b1 > 1.0f)
+    //        return false;
+    //    var s2 = Vector3.Cross(d, e1);
+    //    var b2 = Vector3.Dot(rayd, s2) * inv_divisor;
+    //    if (b2 < 0.0f || b1 + b2 > 1.0f)
+    //        return false;
+
+    //    var t = Vector3.Dot(e2, s2) * inv_divisor;
+    //    return t >= 0.0f && t <= 1.0f;
+    //}
+    public static bool intersects_quad(Vector3 p1, Vector3 p2, Vector3 blade1, Vector3 blade2, Vector3 blade3, Vector3 blade4, bool debug = false)
+    {
+        return intersects(blade1, blade2, blade3, p1, p2, debug) ||
+               intersects(blade1, blade3, blade4, p1, p2, debug)/* ||
+               intersects(blade2, blade3, blade4, p1, p2) ||
+               intersects(blade2, blade3, blade1, p1, p2)*/;
+    }
+    public static void CutFlexSoft(Transform target, Vector3 blade1, Vector3 blade2, Vector3 blade3, Vector3 blade4, Collider c)
     {
         FlexShapeMatching shapes = target.GetComponent<FlexShapeMatching>();
         FlexParticles particles = target.GetComponent<FlexParticles>();
 
         List<int> indicies = new List<int>();
         List<int> offsets = new List<int>();
-
-        List<int> otherIndices = new List<int>();
+        Debug.Log("Blade: " + blade1.ToString("F4") + blade2.ToString("F4") + blade3.ToString("F4") + blade4.ToString("F4") );
+        List <int> otherIndices = new List<int>();
         var centers = Enumerable.Range(0, shapes.m_shapesCount).Select(i => shape_to_world(i, shapes)).ToList();
         int indexBeg = 0;
         int indexEnd = 0;
@@ -43,7 +126,19 @@ public class CutFlexUtil
             {
                 int id = shapes.m_shapeIndices[j];
                 Vector3 particlePos = particles.m_particles[id].pos;
-                if (sliced_by_shape(particlePos, centers[i], plane, collider))
+                var qisect = intersects_quad(particlePos, centers[i], blade1, blade2, blade3, blade4);
+                var cisect = !plane.SameSide(particlePos, centers[i]) && c.bounds.IntersectRay(new Ray(particlePos, centers[i] - particlePos));
+                if (qisect && !cisect)
+                {
+                    Debug.Log("Unwanted: " + particlePos.ToString("F4") + ';' + centers[i].ToString("F4"));
+                    intersects_quad(particlePos, centers[i], blade1, blade2, blade3, blade4, true);
+                }
+                if (!qisect && cisect)
+                {
+                    Debug.Log("Wanted: " + particlePos.ToString("F4") + ';' + centers[i].ToString("F4"));
+                    intersects_quad(particlePos, centers[i], blade1, blade2, blade3, blade4, true);
+                }
+                if (qisect)
                 {
                     if (!otherIndices.Contains(id))
                     {
