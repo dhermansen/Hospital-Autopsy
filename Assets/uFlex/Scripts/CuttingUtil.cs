@@ -180,7 +180,7 @@ public class CutFlexUtil
 
         int shapeStart = 0;
         int shapeIndex = 0;
-        int shapeIndexOffset = 0;
+        var rest_positions = new Vector3[indicies.Count];
         for (int s = 0; s < shapes.m_shapesCount; s++)
         {
             shapes.m_shapeTranslations[s] = new Vector3();
@@ -208,14 +208,12 @@ public class CutFlexUtil
 
                 // remap indices and create local space positions for each shape
                 Vector3 pos = particles.m_restParticles[p].pos;
-                shapes.m_shapeRestPositions[shapeIndexOffset] = pos - shapes.m_shapeCenters[s];
-
-                shapeIndexOffset++;
+                rest_positions[i] = pos - shapes.m_shapeCenters[s];
             }
 
             shapeStart = shapeEnd;
         }
-
+        shapes.m_shapeRestPositions = rest_positions;
         //for (int i = 0, endi = mesh.triangles.Count(); i < endi; i += 3)
         //{
         //    var pt1 = mesh.vertices[i+0];

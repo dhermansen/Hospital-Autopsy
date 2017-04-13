@@ -61,8 +61,8 @@ public class softbodyinfo : FlexProcessor {
         renal = GameObject.Find("RenalSystemColor");
 
         cutting_cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        cutting_cube.transform.position = renal.transform.position + new Vector3(3.0f, -4.5f, -3.5f);
-        cutting_cube.transform.localScale = new Vector3(0.2f, 1.1f, 4.0f);
+        cutting_cube.transform.position = renal.transform.position + new Vector3(3.0f, -4.2f, -3.5f);
+        cutting_cube.transform.localScale = new Vector3(0.2f, 1.3f, 4.0f);
         cutting_cube.name = "cuttingcube";
 
         var long_knife = GameObject.Find("Long Knife");
@@ -73,13 +73,16 @@ public class softbodyinfo : FlexProcessor {
         pd3 = blade.Find("Attachable Slicer/PlaneDefinition3");
         pd4 = blade.Find("Attachable Slicer/PlaneDefinition4");
         //Debug.LogFormat("Number of indices in triangle list {0}", renal.GetComponent<SkinnedMeshRenderer>().sharedMesh.triangles.Count());
+        var smr = renal.GetComponent<SkinnedMeshRenderer>();
+        smr.sharedMesh = Instantiate(smr.sharedMesh) as Mesh;
+
     }
 
     public override void PostContainerUpdate(FlexSolver solver, FlexContainer cntr, FlexParameters parameters)
     {
         if (!time.HasValue)
             time = Time.time;
-        CutFlexUtil.CutFlexSoft(renal.transform, pd1.position, pd2.position, pd3.position, pd4.position);
+        //CutFlexUtil.CutFlexSoft(renal.transform, pd1.position, pd2.position, pd3.position, pd4.position);
 
         if (!has_cut && Time.time > 2 + time.Value)
         {
@@ -91,8 +94,9 @@ public class softbodyinfo : FlexProcessor {
             var ur = box.bounds.center + new Vector3(0, +box.bounds.extents.y / 2, -box.bounds.extents.z / 2);
             var lr = box.bounds.center + new Vector3(0, +box.bounds.extents.y / 2, +box.bounds.extents.z / 2);
             var ll = box.bounds.center + new Vector3(0, -box.bounds.extents.y / 2, +box.bounds.extents.z / 2);
-            //CutFlexUtil.CutFlexSoft(renal.transform, ul, ur, lr, ll);
-            /*
+            Debug.LogFormat("Blade pts: {0} {1} {2} {3}", ul, ur, lr, ll);
+            CutFlexUtil.CutFlexSoft(renal.transform, ul, ur, lr, ll);
+
             var mesh = new Mesh();
             renal.GetComponent<SkinnedMeshRenderer>().BakeMesh(mesh);
             var indices = new int[mesh.subMeshCount][];
@@ -111,9 +115,9 @@ public class softbodyinfo : FlexProcessor {
                                             null);
             sj.transform = renal.transform.localToWorldMatrix;
             sj.quad_pts = new List<Vector3>{ ul, ur, lr, ll };
-            System.Threading.ThreadPool.QueueUserWorkItem((state_info) => ft.find_triangles(sj));
-            //ft.find_triangles(sj);
-            */
+            //System.Threading.ThreadPool.QueueUserWorkItem((state_info) => ft.find_triangles(sj));
+            ft.find_triangles(sj);
+
         }
     }
     public void Update()
