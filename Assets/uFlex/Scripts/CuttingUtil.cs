@@ -10,7 +10,8 @@ public class CutFlexUtil
 {
     public static Vector3 shape_to_world(int i, FlexShapeMatching fsm)
     {
-        return fsm.m_shapeRotations[i] * fsm.m_shapeCenters[i] / 100.0f + fsm.m_shapeTranslations[i];
+        var rotated_center = fsm.m_shapeRotations[i] * fsm.m_shapeCenters[i];
+        return rotated_center / 100.0f + fsm.m_shapeTranslations[i];
     }
     public static void world_to_shape(Vector3 pt, int i, FlexShapeMatching fsm)
     {
@@ -104,7 +105,7 @@ public class CutFlexUtil
                intersects(blade2, blade3, blade4, p1, p2) ||
                intersects(blade2, blade3, blade1, p1, p2)*/;
     }
-    public static void CutFlexSoft(Transform target, Vector3 blade1, Vector3 blade2, Vector3 blade3, Vector3 blade4)
+    public static bool CutFlexSoft(Transform target, Vector3 blade1, Vector3 blade2, Vector3 blade3, Vector3 blade4)
     {
         FlexShapeMatching shapes = target.GetComponent<FlexShapeMatching>();
         FlexParticles particles = target.GetComponent<FlexParticles>();
@@ -154,7 +155,7 @@ public class CutFlexUtil
             indexBeg = indexEnd;
         }
         if (otherIndices.Count == 0)
-            return;
+            return false;
         for (int i = 0; i < otherIndices.Count; i++)
         {
             if (!indicies.Contains(otherIndices[i]))
@@ -234,6 +235,7 @@ public class CutFlexUtil
         //    Vector3 vertexPos = mesh.vertices[i];
         //    mesh.boneWeights[i] = CheckWeight(boneWeights[i], vertexPos, shapes.m_shapeCenters, plane);
         //}
+        return true;
     }
     public static BoneWeight CheckWeight(BoneWeight weight, Vector3 vert, Vector3[] bones, Plane plane)
     {

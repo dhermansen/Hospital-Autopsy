@@ -18,12 +18,13 @@ public class OverController : MonoBehaviour {
         copy.transform.SetParent(orig.transform.parent);
         copy.name = orig.name;
         copy.SetActive(true);
+        //copy.gameObject.renderer.
         orig.SetActive(false);
         return copy;
     }
     // Use this for initialization
     void Start () {
-        //current_orig = GameObject.Find("RenalSystem");
+        //current_orig = GameObject.Find("RenalSystemColor");
         //current_copy = dup(current_orig);
         //current_copy.SetActive(false);
 
@@ -35,8 +36,9 @@ public class OverController : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-		
-	}
+        //if (Time.time > 4)
+        //    current_copy.SetActive(true);
+    }
     void GeneratePressed(Button btn)
     {
         var gbt = btn.gameObject.GetComponentInChildren<Text>();
