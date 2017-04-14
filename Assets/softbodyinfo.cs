@@ -76,25 +76,16 @@ public static class ft
     }
 }
 public class softbodyinfo : FlexProcessor {
-    GameObject renal, cutting_cube;
+    GameObject renal;//, cutting_cube;
     Transform pd1, pd2, pd3, pd4;
-    Collider blade_collider;
-    Vector3[] affected_pts;
-    float? time;
     slice_job sj = new slice_job();
 
 	// Use this for initialization
 	void Start () {
         renal = GameObject.Find("RenalSystemColor");
 
-        cutting_cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        cutting_cube.transform.position = renal.transform.position + new Vector3(3.0f, -4.2f, -3.5f);
-        cutting_cube.transform.localScale = new Vector3(0.2f, 1.3f, 4.0f);
-        cutting_cube.name = "cuttingcube";
-
         var long_knife = GameObject.Find("Long Knife");
         var blade = long_knife.transform.Find("Blade");
-        blade_collider = blade.GetComponent<MeshCollider>();
         pd1 = blade.Find("Attachable Slicer/PlaneDefinition1");
         pd2 = blade.Find("Attachable Slicer/PlaneDefinition2");
         pd3 = blade.Find("Attachable Slicer/PlaneDefinition3");
@@ -106,8 +97,6 @@ public class softbodyinfo : FlexProcessor {
 
     public override void PostContainerUpdate(FlexSolver solver, FlexContainer cntr, FlexParameters parameters)
     {
-        if (!time.HasValue)
-            time = Time.time;
         if (!sj.is_processing && CutFlexUtil.CutFlexSoft(renal.transform, pd1.position, pd2.position, pd3.position, pd4.position))
         {
             var mesh = new Mesh();
@@ -123,33 +112,6 @@ public class softbodyinfo : FlexProcessor {
             sj.is_done = false;
             System.Threading.ThreadPool.QueueUserWorkItem((state_info) => ft.find_triangles(sj));
         }
-
-        //if (!has_cut && Time.time > 2 + time.Value)
-        //{
-        //    has_cut = true;
-        //    Debug.Log("cutting");
-
-        //    var box = cutting_cube.GetComponent<Collider>();
-        //    var ul = box.bounds.center + new Vector3(0, -box.bounds.extents.y / 2, -box.bounds.extents.z / 2);
-        //    var ur = box.bounds.center + new Vector3(0, +box.bounds.extents.y / 2, -box.bounds.extents.z / 2);
-        //    var lr = box.bounds.center + new Vector3(0, +box.bounds.extents.y / 2, +box.bounds.extents.z / 2);
-        //    var ll = box.bounds.center + new Vector3(0, -box.bounds.extents.y / 2, +box.bounds.extents.z / 2);
-        //    Debug.LogFormat("Blade pts: {0} {1} {2} {3}", ul, ur, lr, ll);
-        //    CutFlexUtil.CutFlexSoft(renal.transform, ul, ur, lr, ll);
-
-        //    var mesh = new Mesh();
-        //    renal.GetComponent<SkinnedMeshRenderer>().BakeMesh(mesh);
-        //    sj.indices = new int[mesh.subMeshCount][];
-        //    for (int i = 0; i < mesh.subMeshCount; i++)
-        //        sj.indices[i] = mesh.GetIndices(i);
-        //    sj.triangles = mesh.triangles;
-        //    sj.vertices = mesh.vertices;
-        //    sj.transform = renal.transform.localToWorldMatrix;
-        //    sj.cutting_quad = new Vector3[4] { ul, ur, lr, ll };
-        //    System.Threading.ThreadPool.QueueUserWorkItem((state_info) => ft.find_triangles(sj));
-        //    //ft.find_triangles(sj);
-
-        //}
     }
     private string stringize(BoneWeight bw)
     {
@@ -161,7 +123,6 @@ public class softbodyinfo : FlexProcessor {
     {
         if (sj.is_done)
         {
-            //affected_pts = sj.affected_vertices.Select(vidx => sj.transform.MultiplyPoint3x4(sj.vertices[vidx])).ToArray();
             var smr = renal.GetComponent<SkinnedMeshRenderer>();
             smr.sharedMesh.subMeshCount = sj.indices.Length;
             for (int j = 0; j < sj.indices.Length; j++)
@@ -189,8 +150,6 @@ public class softbodyinfo : FlexProcessor {
                                                      new weight_thing(bw.boneIndex1, bw.weight1),
                                                      new weight_thing(bw.boneIndex2, bw.weight2),
                                                      new weight_thing(bw.boneIndex3, bw.weight3) };
-                //if (bIdxs.Count(bidx => !plane.SameSide(v, CutFlexUtil.shape_to_world(bidx.bone_idx, shapes))) == 0)
-                //    Debug.LogFormat("Unchanged: {0}", vidx);
                 bIdxs = bIdxs.Select(bidx => plane.SameSide(v, CutFlexUtil.shape_to_world(bidx.bone_idx, shapes)) ?
                     bidx : new weight_thing(bidx.bone_idx, 0.0f)).ToList();
                 bIdxs.Sort((lhs, rhs) => lhs.weight > rhs.weight ? -1 : 1);
@@ -206,34 +165,13 @@ public class softbodyinfo : FlexProcessor {
                 bw.weight3 = bIdxs[3].weight / weight_sum;
 
                 new_bone_weights[vidx] = bw;
-                //if (vidx == 7468)
-                //    Debug.Log(stringize(bw));
-
             }
             smr.sharedMesh.boneWeights = new_bone_weights;
-            //smr.sharedMesh = Instantiate(smr.sharedMesh) as Mesh;
             sj.is_processing = false;
         }
-        //else if (has_added)
-        //{
-        //    //var smr = renal.GetComponent<SkinnedMeshRenderer>();
-        //    //Debug.LogFormat("Next update: {0}", stringize(smr.sharedMesh.boneWeights[1837]));
-        //    //Debug.Log("Stop here");
-        //}
     }
     private void OnDrawGizmos()
     {
-        //Debug.LogFormat("Number of points: {0}", pts.Count);
-        Gizmos.color = Color.green;
-        for (int i = 0; affected_pts != null && i < affected_pts.Length; i += 3)
-        {
-            Gizmos.DrawLine(affected_pts[i+0], affected_pts[i + 1]);
-            Gizmos.DrawLine(affected_pts[i+1], affected_pts[i + 2]);
-            Gizmos.DrawLine(affected_pts[i+2], affected_pts[i + 0]);
-        }
-        //Gizmos.color = Color.blue;
-        //Gizmos.DrawWireCube(renal.transform.position + new Vector3(3.0f, -4.0f, -3.5f), new Vector3(0.2f, 1.0f, 4.0f));
-
         var size = new Vector3(0.2f, 0.2f, 0.2f);
         Gizmos.color = Color.red;
         Gizmos.DrawCube(pd1.position, size);

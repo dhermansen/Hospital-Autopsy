@@ -73,37 +73,10 @@ public class CutFlexUtil
 
         return true;                       // I is in T
     }
-    //{
-    //    var rayd = p2 - p1;
-    //    // Vectors from p1 to p2/p3 (edges)
-    //    var e1 = tri2 - tri1;
-    //    var e2 = tri3 - tri1;
-    //    var s1 = Vector3.Cross(rayd, e2);
-    //    var divisor = Vector3.Dot(s1, e1);
-    //    //if determinant is near zero, ray lies in plane of triangle otherwise not
-    //    if (Mathf.Abs(divisor) < 1e-6)
-    //        return false;
-    //    var inv_divisor = 1.0f / divisor;
-
-    //    //calculate distance from p1 to ray origin
-    //    var d = p1 - tri1;
-    //    var b1 = Vector3.Dot(d, s1) * inv_divisor;
-    //    if (b1 < 0.0f || b1 > 1.0f)
-    //        return false;
-    //    var s2 = Vector3.Cross(d, e1);
-    //    var b2 = Vector3.Dot(rayd, s2) * inv_divisor;
-    //    if (b2 < 0.0f || b1 + b2 > 1.0f)
-    //        return false;
-
-    //    var t = Vector3.Dot(e2, s2) * inv_divisor;
-    //    return t >= 0.0f && t <= 1.0f;
-    //}
     public static bool intersects_quad(Vector3 p1, Vector3 p2, Vector3 blade1, Vector3 blade2, Vector3 blade3, Vector3 blade4, bool debug = false)
     {
         return intersects(blade1, blade2, blade3, p1, p2, debug) ||
-               intersects(blade1, blade3, blade4, p1, p2, debug)/* ||
-               intersects(blade2, blade3, blade4, p1, p2) ||
-               intersects(blade2, blade3, blade1, p1, p2)*/;
+               intersects(blade1, blade3, blade4, p1, p2, debug);
     }
     public static bool CutFlexSoft(Transform target, Vector3 blade1, Vector3 blade2, Vector3 blade3, Vector3 blade4)
     {
@@ -117,7 +90,7 @@ public class CutFlexUtil
         var centers = Enumerable.Range(0, shapes.m_shapesCount).Select(i => shape_to_world(i, shapes)).ToList();
         int indexBeg = 0;
         int indexEnd = 0;
-        var plane = new Plane(blade1, blade2, blade3);
+        //var plane = new Plane(blade1, blade2, blade3);
         for (int i = 0; i < shapes.m_shapesCount; ++i)
         {
             indexEnd = shapes.m_shapeOffsets[i];
@@ -127,19 +100,7 @@ public class CutFlexUtil
             {
                 int id = shapes.m_shapeIndices[j];
                 Vector3 particlePos = particles.m_particles[id].pos;
-                var qisect = intersects_quad(particlePos, centers[i], blade1, blade2, blade3, blade4);
-                //var cisect = !plane.SameSide(particlePos, centers[i]) && c.bounds.IntersectRay(new Ray(particlePos, centers[i] - particlePos));
-                //if (qisect && !cisect)
-                //{
-                //    Debug.Log("Unwanted: " + particlePos.ToString("F4") + ';' + centers[i].ToString("F4"));
-                //    intersects_quad(particlePos, centers[i], blade1, blade2, blade3, blade4, true);
-                //}
-                //if (!qisect && cisect)
-                //{
-                //    Debug.Log("Wanted: " + particlePos.ToString("F4") + ';' + centers[i].ToString("F4"));
-                //    intersects_quad(particlePos, centers[i], blade1, blade2, blade3, blade4, true);
-                //}
-                if (qisect)
+                if (intersects_quad(particlePos, centers[i], blade1, blade2, blade3, blade4))
                 {
                     if (!otherIndices.Contains(id))
                     {
@@ -160,7 +121,7 @@ public class CutFlexUtil
         {
             if (!indicies.Contains(otherIndices[i]))
             {
-                int index = FindClosedBoneIndexOnSameSide(centers.ToArray(), particles.m_particles[otherIndices[i]].pos, plane);
+                int index = FindClosestBoneIndexOnSameSide(centers.ToArray(), particles.m_particles[otherIndices[i]].pos, blade1, blade2, blade3, blade4);
                 int atIndex = offsets[index];
                 indicies.Insert(atIndex, otherIndices[i]);
                 for (int j = index; j < offsets.Count; j++)
@@ -215,106 +176,18 @@ public class CutFlexUtil
             shapeStart = shapeEnd;
         }
         shapes.m_shapeRestPositions = rest_positions;
-        //for (int i = 0, endi = mesh.triangles.Count(); i < endi; i += 3)
-        //{
-        //    var pt1 = mesh.vertices[i+0];
-        //    var pt2 = mesh.vertices[i+1];
-        //    var pt3 = mesh.vertices[i+2];
-        //    if (sliced_by_shape(pt1, pt3, plane, collider) || sliced_by_shape(pt2, pt3, plane, collider))
-        //    {
-        //        //Store this triangle.
-        //        pts.Add(pt1);
-        //        pts.Add(pt2);
-        //        pts.Add(pt3);
-        //    }
-        //}
-        //BoneWeight[] boneWeights = new BoneWeight[mesh.vertexCount];
-        //for (int i = 0; i < mesh.vertexCount; i++)
-        //{
-        //    boneWeights[i] = mesh.boneWeights[i];
-        //    Vector3 vertexPos = mesh.vertices[i];
-        //    mesh.boneWeights[i] = CheckWeight(boneWeights[i], vertexPos, shapes.m_shapeCenters, plane);
-        //}
+
         return true;
     }
-    public static BoneWeight CheckWeight(BoneWeight weight, Vector3 vert, Vector3[] bones, Plane plane)
-    {
-        //return weight;
-        Vector3 shapeCenter = bones[weight.boneIndex0];
-        float value;
 
-        int flag = 0;
-        if (plane.SameSide(shapeCenter, vert) == false)
-        {
-            value = weight.weight0;
-            weight.weight0 = 0;
-
-
-            int index = FindClosedBoneIndexOnSameSide(new Vector3[] { bones[weight.boneIndex1], bones[weight.boneIndex2], bones[weight.boneIndex3] }, vert, plane);
-            if (index == 0) weight.weight1 += value;
-            else if (index == 1) weight.weight2 += value;
-            else if (index == 2) weight.weight3 += value;
-
-            flag++;
-        }
-
-        shapeCenter = bones[weight.boneIndex1];
-        if (plane.SameSide(shapeCenter, vert) == false)
-        {
-            value = weight.weight1;
-            weight.weight1 = 0;
-            //
-            int index = FindClosedBoneIndexOnSameSide(new Vector3[] { bones[weight.boneIndex0], bones[weight.boneIndex2], bones[weight.boneIndex3] }, vert, plane);
-            if (index == 0) weight.weight0 += value;
-            else if (index == 1) weight.weight2 += value;
-            else if (index == 2) weight.weight3 += value;
-            flag++;
-        }
-        shapeCenter = bones[weight.boneIndex2];
-        if (plane.SameSide(shapeCenter, vert) == false)
-        {
-            value = weight.weight2;
-            weight.weight2 = 0;
-
-            int index = FindClosedBoneIndexOnSameSide(new Vector3[] { bones[weight.boneIndex0], bones[weight.boneIndex1], bones[weight.boneIndex3] }, vert, plane);
-            if (index == 0) weight.weight0 += value;
-            else if (index == 1) weight.weight1 += value;
-            else if (index == 2) weight.weight3 += value;
-
-            flag++;
-        }
-        shapeCenter = bones[weight.boneIndex3];
-        if (plane.SameSide(shapeCenter, vert) == false)
-        {
-            value = weight.weight3;
-            weight.weight3 = 0;
-
-            int index = FindClosedBoneIndexOnSameSide(new Vector3[] { bones[weight.boneIndex0], bones[weight.boneIndex1], bones[weight.boneIndex2] }, vert, plane);
-            if (index == 0) weight.weight0 += value;
-            else if (index == 1) weight.weight1 += value;
-            else if (index == 2) weight.weight2 += value;
-
-            flag++;
-        }
-        if (flag > 3)
-        {
-            Debug.Log(weight.weight0 + "------" + weight.weight1 + "------" + weight.weight2 + "------" + weight.weight3);
-
-            weight.boneIndex0 = FindClosedBoneIndexOnSameSide(bones, vert, plane);
-            weight.weight0 = 1;
-        }
-
-        return weight;
-
-    }
-
-    public static int FindClosedBoneIndexOnSameSide(Vector3[] BonePos, Vector3 vert, Plane plane)
+    public static int FindClosestBoneIndexOnSameSide(Vector3[] BonePos, Vector3 vert,
+        Vector3 blade1, Vector3 blade2, Vector3 blade3, Vector3 blade4)
     {
         int index = -1;
         float dis = float.MaxValue;
         for (int i = 0; i < BonePos.Length; i++)
         {
-            if (plane.SameSide(BonePos[i], vert))
+            if (intersects_quad(BonePos[i], vert, blade1, blade2, blade3, blade4))
             {
                 if (Vector3.Distance(BonePos[i], vert) < dis)
                 {
