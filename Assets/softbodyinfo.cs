@@ -77,7 +77,9 @@ public static class ft
 }
 public class softbodyinfo : FlexProcessor {
     GameObject renal;//, cutting_cube;
-    Transform pd1, pd2, pd3, pd4;
+    Transform[] lk_pts = new Transform[4];
+    Transform[] sl_pts = new Transform[4];
+    Transform[] sc_pts = new Transform[4];
     slice_job sj = new slice_job();
 
 	// Use this for initialization
@@ -86,18 +88,24 @@ public class softbodyinfo : FlexProcessor {
 
         var long_knife = GameObject.Find("Long Knife");
         var blade = long_knife.transform.Find("Blade");
-        pd1 = blade.Find("Attachable Slicer/PlaneDefinition1");
-        pd2 = blade.Find("Attachable Slicer/PlaneDefinition2");
-        pd3 = blade.Find("Attachable Slicer/PlaneDefinition3");
-        pd4 = blade.Find("Attachable Slicer/PlaneDefinition4");
+        lk_pts[0] = blade.Find("Attachable Slicer/PlaneDefinition1");
+        lk_pts[1] = blade.Find("Attachable Slicer/PlaneDefinition2");
+        lk_pts[2] = blade.Find("Attachable Slicer/PlaneDefinition3");
+        lk_pts[3] = blade.Find("Attachable Slicer/PlaneDefinition4");
+
+        var scalpel = GameObject.Find("Scalpel");
+        var large_blade = scalpel.transform.Find("Large_Blade");
+        sl_pts[0] = large_blade.Find("Attachable Slicer/PlaneDefinition1");
+        sl_pts[1] = large_blade.Find("Attachable Slicer/PlaneDefinition2");
+        sl_pts[2] = large_blade.Find("Attachable Slicer/PlaneDefinition3");
+        sl_pts[3] = large_blade.Find("Attachable Slicer/PlaneDefinition4");
         //Debug.LogFormat("Number of indices in triangle list {0}", renal.GetComponent<SkinnedMeshRenderer>().sharedMesh.triangles.Count());
         var smr = renal.GetComponent<SkinnedMeshRenderer>();
         smr.sharedMesh = Instantiate(smr.sharedMesh) as Mesh;
     }
-
-    public override void PostContainerUpdate(FlexSolver solver, FlexContainer cntr, FlexParameters parameters)
+    private void queue_work(Transform[] pts)
     {
-        if (!sj.is_processing && CutFlexUtil.CutFlexSoft(renal.transform, pd1.position, pd2.position, pd3.position, pd4.position))
+        if (!sj.is_processing && CutFlexUtil.CutFlexSoft(renal.transform, pts[0].position, pts[1].position, pts[2].position, pts[3].position))
         {
             var mesh = new Mesh();
             renal.GetComponent<SkinnedMeshRenderer>().BakeMesh(mesh);
@@ -107,11 +115,17 @@ public class softbodyinfo : FlexProcessor {
             sj.triangles = mesh.triangles;
             sj.vertices = mesh.vertices;
             sj.transform = renal.transform.localToWorldMatrix;
-            sj.cutting_quad = new Vector3[4] { pd1.position, pd2.position, pd3.position, pd4.position };
+            sj.cutting_quad = new Vector3[4] { pts[0].position, pts[1].position, pts[2].position, pts[3].position };
             sj.is_processing = true;
             sj.is_done = false;
             System.Threading.ThreadPool.QueueUserWorkItem((state_info) => ft.find_triangles(sj));
         }
+    }
+    public override void PostContainerUpdate(FlexSolver solver, FlexContainer cntr, FlexParameters parameters)
+    {
+        queue_work(lk_pts);
+        queue_work(sl_pts);
+        //queue_work(sc_pts);
     }
     private string stringize(BoneWeight bw)
     {
@@ -170,18 +184,23 @@ public class softbodyinfo : FlexProcessor {
             sj.is_processing = false;
         }
     }
-    private void OnDrawGizmos()
+    private void viz_blade(Transform[] pts)
     {
         var size = new Vector3(0.2f, 0.2f, 0.2f);
         Gizmos.color = Color.red;
-        Gizmos.DrawCube(pd1.position, size);
+        Gizmos.DrawCube(pts[0].position, size);
         Gizmos.color = Color.green;
-        Gizmos.DrawCube(pd2.position, size);
+        Gizmos.DrawCube(pts[1].position, size);
         Gizmos.color = Color.grey;
-        Gizmos.DrawCube(pd3.position, size);
+        Gizmos.DrawCube(pts[2].position, size);
         Gizmos.color = Color.blue;
-        Gizmos.DrawCube(pd4.position, size);
-
+        Gizmos.DrawCube(pts[3].position, size);
+    }
+    private void OnDrawGizmos()
+    {
+        viz_blade(lk_pts);
+        viz_blade(sl_pts);
+        //viz_blade(sc_pts);
         //if (sj.vertices != null && sj.vertices.Length > 7468)
         //{
         //    var smr = renal.GetComponent<SkinnedMeshRenderer>();
