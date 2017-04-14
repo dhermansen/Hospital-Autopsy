@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using uFlex;
+using VRTK;
 
 public class slice_job
 {
@@ -76,14 +77,15 @@ public static class ft
     }
 }
 public class softbodyinfo : FlexProcessor {
-    GameObject renal;//, cutting_cube;
+    GameObject renal;
     Transform[] lk_pts = new Transform[4];
     Transform[] sl_pts = new Transform[4];
     Transform[] sc_pts = new Transform[4];
+    Transform scissors_closed;
     slice_job sj = new slice_job();
-
-	// Use this for initialization
-	void Start () {
+    bool long_knife_held, scalpel_held, scissors_held;
+    // Use this for initialization
+    void Start () {
         renal = GameObject.Find("RenalSystemColor");
 
         var long_knife = GameObject.Find("Long Knife");
@@ -99,9 +101,29 @@ public class softbodyinfo : FlexProcessor {
         sl_pts[1] = large_blade.Find("Attachable Slicer/PlaneDefinition2");
         sl_pts[2] = large_blade.Find("Attachable Slicer/PlaneDefinition3");
         sl_pts[3] = large_blade.Find("Attachable Slicer/PlaneDefinition4");
+
+        var scissors = GameObject.Find("Scissors");
+        scissors_closed = scissors.transform.Find("Closed/Left Arm");
+        sc_pts[0] = scissors_closed.Find("Attachable Slicer/PlaneDefinition1");
+        sc_pts[1] = scissors_closed.Find("Attachable Slicer/PlaneDefinition2");
+        sc_pts[2] = scissors_closed.Find("Attachable Slicer/PlaneDefinition3");
+        sc_pts[3] = scissors_closed.Find("Attachable Slicer/PlaneDefinition4");
         //Debug.LogFormat("Number of indices in triangle list {0}", renal.GetComponent<SkinnedMeshRenderer>().sharedMesh.triangles.Count());
         var smr = renal.GetComponent<SkinnedMeshRenderer>();
         smr.sharedMesh = Instantiate(smr.sharedMesh) as Mesh;
+
+        var left_grab = GameObject.Find("LeftController").GetComponent<VRTK_InteractGrab>();
+        var set_held = new ObjectInteractEventHandler((sender, e) =>
+        {
+            long_knife_held = e.target == long_knife;
+            scalpel_held = e.target == scalpel;
+            scissors_held = e.target == scissors;
+        });
+        left_grab.ControllerGrabInteractableObject += set_held;
+        left_grab.ControllerUngrabInteractableObject += set_held;
+        var right_grab = GameObject.Find("RightController").GetComponent<VRTK_InteractGrab>();
+        right_grab.ControllerGrabInteractableObject += set_held;
+        right_grab.ControllerUngrabInteractableObject += set_held;
     }
     private void queue_work(Transform[] pts)
     {
@@ -123,9 +145,12 @@ public class softbodyinfo : FlexProcessor {
     }
     public override void PostContainerUpdate(FlexSolver solver, FlexContainer cntr, FlexParameters parameters)
     {
-        queue_work(lk_pts);
-        queue_work(sl_pts);
-        //queue_work(sc_pts);
+        if (long_knife_held)
+            queue_work(lk_pts);
+        if (scalpel_held)
+            queue_work(sl_pts);
+        if (scissors_closed.gameObject.activeInHierarchy && scissors_held)
+            queue_work(sc_pts);
     }
     private string stringize(BoneWeight bw)
     {
@@ -200,7 +225,8 @@ public class softbodyinfo : FlexProcessor {
     {
         viz_blade(lk_pts);
         viz_blade(sl_pts);
-        //viz_blade(sc_pts);
+        if (scissors_closed.gameObject.activeInHierarchy)
+            viz_blade(sc_pts);
         //if (sj.vertices != null && sj.vertices.Length > 7468)
         //{
         //    var smr = renal.GetComponent<SkinnedMeshRenderer>();
