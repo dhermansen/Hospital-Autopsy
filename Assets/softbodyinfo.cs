@@ -23,11 +23,26 @@ public class softbodyinfo : FlexProcessor {
     Transform[] sc_pts = new Transform[4];
     Transform scissors_closed;
     slice_job sj = new slice_job();
+    bool has_cut = false;
+    GameObject[] tmp_cut_objs = new GameObject[4];
+    Transform[] tmp_cut_pts = new Transform[4];
+
     bool long_knife_held, scalpel_held, scissors_held;
     // Use this for initialization
     void Start () {
-        renal = GameObject.Find("RenalSystemColor");
+        Vector3[] positions = new Vector3[4];
+        positions[0] = new Vector3(1, 0, -22);
+        positions[1] = new Vector3(1, 5, -22);
+        positions[2] = new Vector3(1, 5, -27);
+        positions[3] = new Vector3(1, 0, -27);
+        for (int i = 0; i < 4; ++i)
+        {
+            tmp_cut_objs[i] = new GameObject();
+            tmp_cut_objs[i].transform.position = positions[i];
+            tmp_cut_pts[i] = tmp_cut_objs[i].transform;
+        }
 
+        renal = GameObject.Find("RenalSystemColor");
         var long_knife = GameObject.Find("Long Knife");
         var blade = long_knife.transform.Find("Blade");
         lk_pts[0] = blade.Find("Attachable Slicer/PlaneDefinition1");
@@ -51,6 +66,7 @@ public class softbodyinfo : FlexProcessor {
         //Debug.LogFormat("Number of indices in triangle list {0}", renal.GetComponent<SkinnedMeshRenderer>().sharedMesh.triangles.Count());
         var smr = renal.GetComponent<SkinnedMeshRenderer>();
         smr.sharedMesh = Instantiate(smr.sharedMesh) as Mesh;
+        smr.sharedMesh.MarkDynamic();
 
         var left_grab = GameObject.Find("LeftController").GetComponent<VRTK_InteractGrab>();
         var set_held = new ObjectInteractEventHandler((sender, e) =>
@@ -80,10 +96,12 @@ public class softbodyinfo : FlexProcessor {
             sj.cutting_quad = new Vector3[4] { pts[0].position, pts[1].position, pts[2].position, pts[3].position };
             sj.is_processing = true;
             sj.is_done = false;
-            System.Threading.ThreadPool.QueueUserWorkItem((state_info) => slice_mesh.find_triangles(sj));
+            //System.Threading.ThreadPool.QueueUserWorkItem((state_info) => slice_mesh.find_triangles(sj));
+            slice_mesh.find_triangles(sj);
         }
     }
     public override void PostContainerUpdate(FlexSolver solver, FlexContainer cntr, FlexParameters parameters)
+    //public override void PreContainerUpdate(FlexSolver solver, FlexContainer cntr, FlexParameters parameters)
     {
         if (long_knife_held)
             queue_work(lk_pts);
@@ -91,6 +109,18 @@ public class softbodyinfo : FlexProcessor {
             queue_work(sl_pts);
         if (scissors_closed.gameObject.activeInHierarchy && scissors_held)
             queue_work(sc_pts);
+
+        if (Time.time > 3 && Time.time < 6 && !has_cut)
+        {
+            has_cut = true;
+            queue_work(tmp_cut_pts);
+        }
+        if (Time.time > 6 && has_cut)
+        {
+            has_cut = false;
+            var ovr = GameObject.Find("UI").GetComponent<OverController>();
+            ovr.restore_mesh_public();
+        }
     }
     private string stringize(BoneWeight bw)
     {
@@ -100,9 +130,11 @@ public class softbodyinfo : FlexProcessor {
     }
     public void Update()
     {
-        if (sj.is_done)
+        if (sj.is_done && sj.is_processing)
         {
             var smr = renal.GetComponent<SkinnedMeshRenderer>();
+
+            smr.sharedMesh.MarkDynamic();
             smr.sharedMesh.subMeshCount = sj.indices.Length;
             for (int j = 0; j < sj.indices.Length; j++)
             {
@@ -149,9 +181,9 @@ public class softbodyinfo : FlexProcessor {
             sj.is_processing = false;
         }
     }
-    private void viz_blade(Transform[] pts)
+    private void viz_blade(Transform[] pts, float scale = 1.0f)
     {
-        var size = new Vector3(0.2f, 0.2f, 0.2f);
+        var size = new Vector3(0.2f, 0.2f, 0.2f) * scale;
         Gizmos.color = Color.red;
         Gizmos.DrawCube(pts[0].position, size);
         Gizmos.color = Color.green;
@@ -163,6 +195,7 @@ public class softbodyinfo : FlexProcessor {
     }
     private void OnDrawGizmos()
     {
+        viz_blade(tmp_cut_pts, 1.0f);
         viz_blade(lk_pts);
         viz_blade(sl_pts);
         if (scissors_closed.gameObject.activeInHierarchy)

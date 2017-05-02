@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
 using uFlex;
 
 public struct MeshValues
@@ -21,6 +22,7 @@ public struct MeshValues
     public Matrix4x4[] bind_poses;
     public ToolItems[] shape_transforms;
     public uFlex.Particle[] flex_particles;
+    //public Mesh mesh;
 }
 
 public class OverController : MonoBehaviour {
@@ -38,12 +40,15 @@ public class OverController : MonoBehaviour {
         var smr = obj.GetComponent<SkinnedMeshRenderer>();
         var fsm = obj.GetComponent<FlexShapeMatching>();
         var fp = obj.GetComponent<FlexParticles>();
+        smr.sharedMesh.MarkDynamic();
+
         mv.shapeRestPositions = fsm.m_shapeRestPositions;
         mv.shapeCenters = fsm.m_shapeCenters;
         mv.shapeTranslations = fsm.m_shapeTranslations;
         mv.shapeRotations = fsm.m_shapeRotations;
         mv.shapeIndices = fsm.m_shapeIndices;
         mv.shapeOffsets = fsm.m_shapeOffsets;
+        //mv.mesh = Instantiate(smr.sharedMesh);
         mv.mesh_indices = new int[smr.sharedMesh.subMeshCount][];
         for (int i = 0; i < smr.sharedMesh.subMeshCount; i++)
             mv.mesh_indices[i] = smr.sharedMesh.GetIndices(i);
@@ -76,19 +81,23 @@ public class OverController : MonoBehaviour {
         fsm.m_shapeIndices = mv.shapeIndices;
         fsm.m_shapeOffsets = mv.shapeOffsets;
         fsm.m_shapeIndicesCount = mv.shapeIndices.Length;
-
+        //smr.sharedMesh = Instantiate(mv.mesh);
         var mesh = Instantiate(smr.sharedMesh) as Mesh;
-        mesh.subMeshCount = mv.mesh_indices.Length;
-        for (int i = 0; i < mv.mesh_indices.Length; i++)
-            mesh.SetIndices(mv.mesh_indices[i], MeshTopology.Triangles, i);
-        mesh.vertices = mv.mesh_vertices;
-        mesh.triangles = mv.mesh_triangles;
-        mesh.boneWeights = mv.mesh_weights;
-        mesh.normals = mv.mesh_normals;
-        mesh.uv = mv.mesh_uv;
-        mesh.bindposes = mv.bind_poses;
-        smr.sharedMesh = mesh;
+        smr.sharedMesh.MarkDynamic();
+        smr.sharedMesh.Clear();
 
+        smr.sharedMesh.vertices = mv.mesh_vertices;
+        smr.sharedMesh.subMeshCount = mv.mesh_indices.Length;
+        for (int i = 0; i < mv.mesh_indices.Length; i++)
+            smr.sharedMesh.SetIndices(mv.mesh_indices[i], MeshTopology.Triangles, i);
+        //smr.sharedMesh.SetTriangles(mv.mesh_triangles.ToList(), 0);
+        smr.sharedMesh.boneWeights = mv.mesh_weights;
+        smr.sharedMesh.SetNormals(mv.mesh_normals.ToList());
+        smr.sharedMesh.SetUVs(0, mv.mesh_uv.ToList());
+        smr.sharedMesh.bindposes = mv.bind_poses;
+        //smr.sharedMesh = mesh;
+        //smr.sharedMesh.UploadMeshData(true);
+        smr.sharedMesh.UploadMeshData(false);
         fp.m_particles = mv.flex_particles;
         for (int i = 0; i < mv.shape_transforms.Length; ++i)
         {
@@ -100,7 +109,7 @@ public class OverController : MonoBehaviour {
     void Start () {
         renal = GameObject.Find("RenalSystemColor");
         backups = save_mesh(renal);
-        renal.GetComponent<Renderer>().enabled = false;
+        //renal.GetComponent<Renderer>().enabled = false;
 
         ppanel = GameObject.Find("PracticePanel");
         ppanel.SetActive(false);
@@ -135,4 +144,9 @@ public class OverController : MonoBehaviour {
             restore_mesh(renal, backups);
         }
     }
+    public void restore_mesh_public()
+    {
+        restore_mesh(renal, backups);
+    }
+
 }

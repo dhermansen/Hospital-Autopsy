@@ -18,11 +18,10 @@ public static class slice_mesh
 {
     public static void find_triangles(slice_job sj)
     {
-        var new_indices = new int[sj.indices.Length][];
         sj.affected_vertices = new List<int>();
         for (int m = 0; m < sj.indices.Count(); ++m)
         {
-            new_indices[m] = new int[sj.indices[m].Count()];
+            var new_indices = new List<int>();
             for (int i = 0; i < sj.indices[m].Count(); i += 3)
             {
                 var p1 = sj.transform.MultiplyPoint3x4(sj.vertices[sj.indices[m][i + 0]]);
@@ -38,13 +37,13 @@ public static class slice_mesh
                 }
                 else
                 {
-                    new_indices[m][i + 0] = sj.indices[m][i + 0];
-                    new_indices[m][i + 1] = sj.indices[m][i + 1];
-                    new_indices[m][i + 2] = sj.indices[m][i + 2];
+                    new_indices.Add(sj.indices[m][i + 0]);
+                    new_indices.Add(sj.indices[m][i + 1]);
+                    new_indices.Add(sj.indices[m][i + 2]);
                 }
             }
+            sj.indices[m] = new_indices.ToArray();
         }
-        sj.indices = new_indices;
         //var new_triangles = new List<int>();
         //for (int i = 0; i < sj.triangles.Length; i += 3)
         //{
